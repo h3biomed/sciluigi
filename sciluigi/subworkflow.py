@@ -5,8 +5,13 @@ log = logging.getLogger('sciluigi-interface')
 class SubWorkflowTask(sciluigi.Task):
 
     @property
-    def last_task(self):
-        return self.sub_workflow()
+    def final_tasks(self):
+        swf = self.sub_workflow()
+        try:
+            _ = (t for t in swf)
+        except TypeError:
+            return [swf]
+        return swf
 
     def new_task(self, instance_name, cls, **kwargs):
         instance_name = '%s - %s' % (self.instance_name, instance_name)
