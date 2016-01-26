@@ -32,6 +32,9 @@ from sciluigi.slurm import RUNMODE_LOCAL
 from sciluigi.slurm import RUNMODE_HPC
 from sciluigi.slurm import RUNMODE_MPI
 
+from sciluigi import subworkflow
+from sciluigi.subworkflow import SubWorkflowTask
+
 from sciluigi import task
 from sciluigi.task import new_task
 from sciluigi.task import Task
