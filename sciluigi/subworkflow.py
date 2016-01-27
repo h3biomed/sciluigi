@@ -1,4 +1,5 @@
 import logging
+import sciluigi
 
 log = logging.getLogger('sciluigi-interface')
 
