@@ -6,14 +6,24 @@ log = logging.getLogger('sciluigi-interface')
 
 class SubWorkflowTask(sciluigi.task.Task):
 
+    _final_tasks = []
+
     @property
     def final_tasks(self):
-        swf = self.sub_workflow()
-        try:
-            _ = (t for t in swf)
-        except TypeError:
-            return [swf]
-        return swf
+        return self._final_tasks
+
+    @final_tasks.setter
+    def final_tasks(self, value):
+        # Force final_tasks to be a list
+        if not isinstance(value, list):
+            return [value]
+        else:
+            return value
+
+    def _call_sub_workflow(self):
+        return_val = self.sub_workflow()
+        self.final_tasks = return_val
+        return return_val
 
     def new_task(self, instance_name, cls, **kwargs):
         instance_name = '%s - %s' % (self.instance_name, instance_name)
@@ -25,5 +35,5 @@ class SubWorkflowTask(sciluigi.task.Task):
         raise NotImplementedError
         
     def requires(self):
-        yield self.sub_workflow()
+        yield self._call_sub_workflow()
         yield super(SubWorkflowTask, self).requires()
