@@ -98,7 +98,7 @@ class DependencyHelpers(object):
         '''
         return self._output_targets()
 
-    def all_outputs(self):
+    def all_output(self):
         '''For use in sub-workflows if you want to extract all output TargetInfo objects from this task'''
         return self._output_infos()
 
