@@ -3,7 +3,8 @@ import sciluigi
 
 log = logging.getLogger('sciluigi-interface')
 
-class SubWorkflowTask(sciluigi.Task):
+
+class SubWorkflowTask(sciluigi.task.Task):
 
     @property
     def final_tasks(self):
