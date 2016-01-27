@@ -47,6 +47,12 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     workflow_task = luigi.Parameter()
     instance_name = luigi.Parameter()
 
+    def new_dynamic_task(self, instance_name, cls, **kwargs):
+        instance_name = '%s - %s' % (self.instance_name, instance_name)
+        while self.workflow_task._tasks.has_key(instance_name):
+            instance_name += ' - Dupe'
+        return self.workflow_task.new_task(instance_name, cls, **kwargs)
+
     def ex_local(self, command):
         '''
         Execute command locally (not through resource manager).
