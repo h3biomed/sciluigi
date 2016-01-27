@@ -16,9 +16,9 @@ class SubWorkflowTask(sciluigi.task.Task):
     def final_tasks(self, value):
         # Force final_tasks to be a list
         if not isinstance(value, list):
-            return [value]
+            self._final_tasks = [value]
         else:
-            return value
+            self._final_tasks = value
 
     def _call_sub_workflow(self):
         return_val = self.sub_workflow()
