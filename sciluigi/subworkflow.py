@@ -7,7 +7,7 @@ log = logging.getLogger('sciluigi-interface')
 class SubWorkflowTask(sciluigi.task.Task):
 
     def __init__(self, *args, **kwargs):
-        super(SubWorkflowTask, self).__init__(args, kwargs)
+        super(SubWorkflowTask, self).__init__(*args, **kwargs)
         self.sub_workflow()
 
     def new_task(self, instance_name, cls, **kwargs):
