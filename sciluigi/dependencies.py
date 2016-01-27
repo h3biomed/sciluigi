@@ -98,43 +98,36 @@ class DependencyHelpers(object):
         '''
         return self._output_targets()
 
-    def all_output(self):
-        '''For use in sub-workflows if you want to extract all output TargetInfo objects from this task'''
-        return self._output_infos()
-
     def _output_targets(self):
         '''
         Extract output targets from the TargetInfo objects
         or functions returning those (or lists of both the earlier)
         for use in luigi's output() method.
         '''
-        return [info.target for info in self._output_infos()]
-
-    def _output_infos(self):
-        output_infos = []
+        output_targets = []
         for attrname in dir(self):
             attrval = getattr(self, attrname)
             if attrname[0:4] == 'out_':
-                output_infos = self._parse_outputitem(attrval, output_infos)
+                output_targets = self._parse_outputitem(attrval, output_targets)
 
-        return output_infos
+        return output_targets
 
-    def _parse_outputitem(self, val, target_infos):
+    def _parse_outputitem(self, val, targets):
         '''
         Recursively loop through lists of TargetInfos, or
         callables returning TargetInfos, or lists of ...
-        (repeat recursively) ... and return all TargetInfos.
+        (repeat recursively) ... and return all targets.
         '''
         if callable(val):
             val = val()
         if isinstance(val, TargetInfo):
-            target_infos.append(val)
+            targets.append(val.target)
         elif isinstance(val, list):
             for valitem in val:
-                target_infos = self._parse_outputitem(valitem, target_infos)
+                targets = self._parse_outputitem(valitem, targets)
         elif isinstance(val, dict):
             for _, valitem in iteritems(val):
-                target_infos = self._parse_outputitem(valitem, target_infos)
+                targets = self._parse_outputitem(valitem, targets)
         else:
             raise Exception('Input item is neither callable, TargetInfo, nor list: %s' % val)
-        return target_infos
+        return targets
