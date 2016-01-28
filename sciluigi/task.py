@@ -21,16 +21,6 @@ def new_task(name, cls, workflow_task, **kwargs):
     (use WorkflowTask.new_task() instead).
     '''
     slurminfo = None
-    for key, val in [(key, val) for key, val in iteritems(kwargs)]:
-        # Handle non-string keys
-        if not isinstance(key, string_types):
-            raise Exception("Key in kwargs to new_task is not string. Must be string: %s" % key)
-        # Handle non-string values
-        if isinstance(val, sciluigi.slurm.SlurmInfo):
-            slurminfo = val
-            kwargs[key] = val
-        elif not isinstance(val, string_types):
-            kwargs[key] = str(val) # Force conversion into string
     kwargs['instance_name'] = name
     kwargs['workflow_task'] = workflow_task
     newtask = cls(**kwargs)
