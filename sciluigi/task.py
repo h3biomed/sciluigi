@@ -34,7 +34,7 @@ def new_task(name, cls, workflow_task, **kwargs):
     kwargs['instance_name'] = name
     kwargs['workflow_task'] = workflow_task
     kwargs['slurminfo'] = slurminfo
-    newtask = cls.from_str_params(kwargs)
+    newtask = cls(**kwargs)
     if slurminfo is not None:
         newtask.slurminfo = slurminfo
     return newtask
