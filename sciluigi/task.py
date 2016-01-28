@@ -33,7 +33,6 @@ def new_task(name, cls, workflow_task, **kwargs):
             kwargs[key] = str(val) # Force conversion into string
     kwargs['instance_name'] = name
     kwargs['workflow_task'] = workflow_task
-    kwargs['slurminfo'] = slurminfo
     newtask = cls(**kwargs)
     if slurminfo is not None:
         newtask.slurminfo = slurminfo
