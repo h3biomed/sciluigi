@@ -34,8 +34,8 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     SciLuigi Task, implementing SciLuigi specific functionality for dependency resolution
     and audit trail logging.
     '''
-    workflow_task = luigi.Parameter()
-    instance_name = luigi.Parameter()
+    workflow_task = luigi.Parameter(significant=False)
+    instance_name = luigi.Parameter(significant=False)
 
     def ex_local(self, command):
         '''
@@ -73,22 +73,12 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
         '''
         return self.ex_local(command)
 
-    def complete(self):
-        outputs = luigi.task.flatten(self.output_infos())
-        if len(outputs) == 0:
-            warnings.warn(
-                "Task %r without outputs has no custom complete() method" % self,
-                stacklevel=2
-            )
-            return False
-
-        # If an output is optional, touch it if it does not exist so that this method still returns True
-        for output in outputs:
+    @luigi.Task.event_handler(luigi.event.SUCCESS)
+    def touch_unfulfilled_optional(self):
+        # If an output is optional, touch it if it does not exist so that no errors will be thrown
+        for output in luigi.task.flatten(self.output_infos()):
             if output.is_optional and not output.target.exists():
                 self.ex_local('touch ' + output.path)
-
-        # Return true if all outputs exist
-        return all(map(lambda output: output.target.exists(), outputs))
 
 # ==============================================================================
 
