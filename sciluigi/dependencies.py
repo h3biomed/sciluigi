@@ -6,6 +6,7 @@ the dependency graph of workflows.
 import luigi
 from luigi.s3 import S3Target
 from luigi.six import iteritems
+import os
 
 # ==============================================================================
 
@@ -18,10 +19,14 @@ class TargetInfo(object):
     path = None
     target = None
 
-    def __init__(self, task, path, format=None, is_tmp=False):
+    def __init__(self, task, path, format=None, is_optional=False, is_tmp=False):
         self.task = task
         self.path = path
+        self.is_optional = is_optional
         self.target = luigi.LocalTarget(path, format, is_tmp)
+
+    def is_empty(self):
+        return os.stat(self.path).st_size == 0
 
     def open(self, *args, **kwargs):
         '''
@@ -36,6 +41,11 @@ class S3TargetInfo(TargetInfo):
         self.task = task
         self.path = path
         self.target = S3Target(path, format=format, client=client)
+
+    @property
+    def is_empty(self):
+        # Maybe I'll implement this later
+        raise NotImplementedError
 
 # ==============================================================================
 
@@ -65,10 +75,12 @@ class DependencyHelpers(object):
         for attrname, attrval in iteritems(self.__dict__):
             if 'in_' == attrname[0:3]:
                 upstream_tasks = self._parse_inputitem(attrval, upstream_tasks)
+            elif 'opt_in_' == attrname[0:7]:
+                upstream_tasks = self._parse_inputitem(attrval, upstream_tasks, is_optional=True)
 
         return upstream_tasks
 
-    def _parse_inputitem(self, val, tasks):
+    def _parse_inputitem(self, val, tasks, is_optional=False):
         '''
         Recursively loop through lists of TargetInfos, or
         callables returning TargetInfos, or lists of ...
@@ -77,7 +89,10 @@ class DependencyHelpers(object):
         if callable(val):
             val = val()
         if isinstance(val, TargetInfo):
-            tasks.append(val.task)
+            # Only require the task if the input is non-optional or if the input is optional but not empty
+            # Ignore empty, optional inputs
+            if not is_optional or not val.is_empty:
+                tasks.append(val.task)
         elif isinstance(val, list):
             for valitem in val:
                 tasks = self._parse_inputitem(valitem, tasks)
@@ -98,21 +113,27 @@ class DependencyHelpers(object):
         '''
         return self._output_targets()
 
+    def output_infos(self):
+        return self._output_infos()
+
     def _output_targets(self):
         '''
         Extract output targets from the TargetInfo objects
         or functions returning those (or lists of both the earlier)
         for use in luigi's output() method.
         '''
-        output_targets = []
+        return [info.target for info in self._output_infos()]
+
+    def _output_infos(self):
+        infos = []
         for attrname in dir(self):
             attrval = getattr(self, attrname)
             if attrname[0:4] == 'out_':
-                output_targets = self._parse_outputitem(attrval, output_targets)
+                infos = self._parse_outputitem(attrval, infos)
 
-        return output_targets
+        return infos
 
-    def _parse_outputitem(self, val, targets):
+    def _parse_outputitem(self, val, target_infos):
         '''
         Recursively loop through lists of TargetInfos, or
         callables returning TargetInfos, or lists of ...
@@ -121,13 +142,13 @@ class DependencyHelpers(object):
         if callable(val):
             val = val()
         if isinstance(val, TargetInfo):
-            targets.append(val.target)
+            target_infos.append(val)
         elif isinstance(val, list):
             for valitem in val:
-                targets = self._parse_outputitem(valitem, targets)
+                target_infos = self._parse_outputitem(valitem, target_infos)
         elif isinstance(val, dict):
             for _, valitem in iteritems(val):
-                targets = self._parse_outputitem(valitem, targets)
+                target_infos = self._parse_outputitem(valitem, target_infos)
         else:
             raise Exception('Input item is neither callable, TargetInfo, nor list: %s' % val)
-        return targets
+        return target_infos

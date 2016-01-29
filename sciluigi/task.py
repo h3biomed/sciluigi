@@ -10,6 +10,7 @@ import sciluigi.audit
 import sciluigi.interface
 import sciluigi.dependencies
 import sciluigi.slurm
+import warnings
 
 log = logging.getLogger('sciluigi-interface')
 
@@ -35,12 +36,6 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     '''
     workflow_task = luigi.Parameter()
     instance_name = luigi.Parameter()
-
-    def new_dynamic_task(self, instance_name, cls, **kwargs):
-        instance_name = '%s - %s' % (self.instance_name, instance_name)
-        while self.workflow_task._tasks.has_key(instance_name):
-            instance_name += ' - Dupe'
-        return self.workflow_task.new_task(instance_name, cls, **kwargs)
 
     def ex_local(self, command):
         '''
@@ -77,6 +72,23 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
         execution via SLURM
         '''
         return self.ex_local(command)
+
+    def complete(self):
+        outputs = luigi.Task.flatten(self.output_infos())
+        if len(outputs) == 0:
+            warnings.warn(
+                "Task %r without outputs has no custom complete() method" % self,
+                stacklevel=2
+            )
+            return False
+
+        # If an output is optional, touch it if it does not exist so that this method still returns True
+        for output in outputs:
+            if output.is_optional and not output.exists():
+                self.ex_local('touch ' + output.path)
+
+        # Return true if all outputs exist
+        return all(map(lambda output: output.target.exists(), outputs))
 
 # ==============================================================================
 
