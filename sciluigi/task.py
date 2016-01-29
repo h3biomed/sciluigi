@@ -74,7 +74,7 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
         return self.ex_local(command)
 
     def complete(self):
-        outputs = luigi.Task.flatten(self.output_infos())
+        outputs = luigi.task.flatten(self.output_infos())
         if len(outputs) == 0:
             warnings.warn(
                 "Task %r without outputs has no custom complete() method" % self,
