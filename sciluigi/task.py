@@ -84,7 +84,7 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
 
         # If an output is optional, touch it if it does not exist so that this method still returns True
         for output in outputs:
-            if output.is_optional and not output.exists():
+            if output.is_optional and not output.target.exists():
                 self.ex_local('touch ' + output.path)
 
         # Return true if all outputs exist
