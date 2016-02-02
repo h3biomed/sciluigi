@@ -3,8 +3,9 @@ This module contains functionality for dependency resolution for constructing
 the dependency graph of workflows.
 '''
 
+import boto3
 import luigi
-from luigi.s3 import S3Target
+from luigi.s3 import S3Client, S3Target
 from luigi.six import iteritems
 import os
 
@@ -36,16 +37,38 @@ class TargetInfo(object):
 
 # ==============================================================================
 
+
 class S3TargetInfo(TargetInfo):
-    def __init__(self, task, path, format=None, client=None):
+    def __init__(self, task, path, is_optional=False, format=None, client=None):
         self.task = task
         self.path = path
+        self.is_optional = is_optional
         self.target = S3Target(path, format=format, client=client)
 
     @property
     def is_empty(self):
-        # Maybe I'll implement this later
-        raise NotImplementedError
+        s3 = boto3.resource('s3')
+        (bucket, key) = S3Client._path_to_bucket_and_key(self.path)
+        return s3.ObjectSummary(bucket, key).size == 0
+
+
+class Input(object):
+    def __init__(self, is_optional=False):
+        self._is_optional = is_optional
+        self._target_info = None
+
+    def get(self):
+        return self._target_info
+
+    def link(self, target_info):
+        if target_info.is_empty():
+            if self._is_optional:
+                raise ValueError('Cannot link empty target to a non-optional input')
+            else:
+                self._target_info = None
+        else:
+            self._target_info = target_info
+
 
 # ==============================================================================
 
@@ -58,7 +81,6 @@ class DependencyHelpers(object):
     # --------------------------------------------------------
     # Handle inputs
     # --------------------------------------------------------
-
     def requires(self):
         '''
         Implement luigi API method by returning upstream tasks
@@ -89,10 +111,7 @@ class DependencyHelpers(object):
         if callable(val):
             val = val()
         if isinstance(val, TargetInfo):
-            # Only require the task if the input is non-optional or if the input is optional but not empty
-            # Ignore empty, optional inputs
-            if not is_optional or not val.is_empty:
-                tasks.append(val.task)
+            tasks.append(val.task)
         elif isinstance(val, list):
             for valitem in val:
                 tasks = self._parse_inputitem(valitem, tasks)

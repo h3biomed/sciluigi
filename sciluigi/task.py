@@ -72,6 +72,7 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
         '''
         return self.ex_local(command)
 
+
 @Task.event_handler(luigi.Event.SUCCESS)
 def touch_unfulfilled_optional(task):
     # If an output is optional, touch it if it does not exist so that no errors will be thrown
