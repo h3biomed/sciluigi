@@ -3,7 +3,6 @@ This module contains sciluigi's subclasses of luigi's Task class.
 '''
 
 import luigi
-from luigi.six import iteritems, string_types
 import logging
 import subprocess as sub
 import sciluigi.audit
@@ -127,13 +126,18 @@ class TaskMeta(type):
         return super(TaskMeta, mcs).__new__(mcs, clsname, bases, attrs)
 
 
+class MergedMeta(luigi.Task.__metaclass__, TaskMeta):
+    # Fixes multiple inheritance metaclass conflict
+    pass
+
+
 class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHelpers, luigi.Task):
     '''
     SciLuigi Task, implementing SciLuigi specific functionality for dependency resolution
     and audit trail logging.
     '''
 
-    __metaclass__ = TaskMeta
+    __metaclass__ = MergedMeta
 
     workflow_task = luigi.Parameter(significant=False)
     instance_name = luigi.Parameter(significant=False)
