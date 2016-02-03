@@ -44,7 +44,6 @@ def swf_input(is_optional):
 
 def task_output(func):
     func.is_output = True
-    func.default_output_value = func(None)
     func.output_type = 'task'
     return func
 
@@ -120,7 +119,11 @@ class TaskMeta(type):
             if hasattr(method, 'is_input'):
                 attrs[name] = property(fget=generate_getter(name, method.default_input_value),
                                        fset=generate_input_setter(name, method.is_optional_input))
-            elif hasattr(method, 'is_output'):
+            elif hasattr(method, 'is_output') and method.output_type == 'task':
+                # Task outputs are immutable and should always return the defined method
+                attrs[name] = property(fget=method, fset=None)
+            elif hasattr(method, 'is_output') and method.output_type == 'swf':
+                # SWF outputs can be chained, just like inputs.  The defined method simply returns the default value
                 attrs[name] = property(fget=generate_getter(name, method.default_output_value),
                                        fset=generate_output_setter(name, method.output_type))
         return super(TaskMeta, mcs).__new__(mcs, clsname, bases, attrs)
