@@ -30,7 +30,7 @@ def new_task(name, cls, workflow_task, **kwargs):
     return newtask
 
 
-def task_input(is_optional=False):
+def task_input(is_optional):
     def wrapped(func):
         func.is_input = True
         func.default_input_value = func(None)
@@ -39,7 +39,29 @@ def task_input(is_optional=False):
     return wrapped
 
 
-def generate_input_getter(label, default_value):
+def swf_input(is_optional):
+    return task_input(is_optional)
+
+
+def task_output():
+    def wrapped(func):
+        func.is_output = True
+        func.default_output_value = func(None)
+        func.output_type = 'task'
+        return func
+    return wrapped
+
+
+def swf_output():
+    def wrapped(func):
+        func.is_output = True
+        func.default_output_value = func(None)
+        func.output_type = 'swf'
+        return func
+    return wrapped
+
+
+def generate_getter(label, default_value):
     private_label = '_' + label
 
     def return_func(self_arg):
@@ -82,13 +104,30 @@ def generate_input_setter(label, is_optional):
     return return_func
 
 
+def generate_output_setter(label, output_type):
+    private_label = '_' + label
+
+    def return_func(self_arg, val):
+        setattr(self_arg, private_label, val)
+
+    if output_type == 'task':
+        return None
+    elif output_type == 'swf':
+        return return_func
+    else:
+        raise ValueError('Invalid output type')
+
+
 class TaskMeta(type):
 
     def __new__(mcs, clsname, bases, attrs):
         for name, method in attrs.iteritems():
             if hasattr(method, 'is_input'):
-                attrs[name] = property(fget=generate_input_getter(name, method.default_input_value),
+                attrs[name] = property(fget=generate_getter(name, method.default_input_value),
                                        fset=generate_input_setter(name, method.is_optional_input))
+            elif hasattr(method, 'is_output'):
+                attrs[name] = property(fget=generate_getter(name, method.default_output_value_value),
+                                       fset=generate_output_setter(name, method.output_type))
         return super(TaskMeta, mcs).__new__(mcs, clsname, bases, attrs)
 
 
@@ -102,56 +141,6 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
 
     workflow_task = luigi.Parameter(significant=False)
     instance_name = luigi.Parameter(significant=False)
-
-    @classmethod
-    def task_input(cls, is_optional=False):
-        label = [None]
-        default_val = [None]
-
-        def _get_private_label():
-            if label[0] is None:
-                raise NotImplementedError
-            return '_' + label[0]
-
-        def getter(self_arg):
-            try:
-                return getattr(self_arg, _get_private_label())
-            except AttributeError:
-                return default_val[0]
-
-        def setter(self_arg, val):
-            if isinstance(val, sciluigi.TargetInfo):
-                setattr(self_arg, _get_private_label(), _parse_target(val))
-            elif isinstance(val, dict):
-                parsed_val = {}
-                for key in val:
-                    parsed_val[key] = _parse_target(val[key])
-                setattr(self_arg, _get_private_label(), parsed_val)
-            elif isinstance(val, list):
-                parsed_val = []
-                for individual_val in val:
-                    parsed_val.append(_parse_target(individual_val))
-                setattr(self_arg, _get_private_label(), parsed_val)
-            else:
-                raise ValueError('Invalid value type. Must be TargetInfo, dict, or list')
-
-        def _parse_target(target):
-            if target.is_empty():
-                if is_optional:
-                    raise ValueError('Cannot link empty target to non-optional input %s' % label)
-                else:
-                    return None
-            else:
-                return target
-
-        def wrapped(func):
-            label[0] = func.__name__
-            default_val[0] = func(None)
-            setattr(cls, label[0], property(fget=getter, fset=setter))
-            return func
-
-        return wrapped
-
 
     def ex_local(self, command):
         '''

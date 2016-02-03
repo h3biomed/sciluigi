@@ -50,7 +50,7 @@ class S3TargetInfo(TargetInfo):
         s3 = boto3.resource('s3')
         (bucket, key) = S3Client._path_to_bucket_and_key(self.path)
         return s3.ObjectSummary(bucket, key).size == 0
-    
+
 
 # ==============================================================================
 
