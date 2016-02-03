@@ -43,22 +43,18 @@ def swf_input(is_optional):
     return task_input(is_optional)
 
 
-def task_output():
-    def wrapped(func):
-        func.is_output = True
-        func.default_output_value = func(None)
-        func.output_type = 'task'
-        return func
-    return wrapped
+def task_output(func):
+    func.is_output = True
+    func.default_output_value = func(None)
+    func.output_type = 'task'
+    return func
 
 
-def swf_output():
-    def wrapped(func):
-        func.is_output = True
-        func.default_output_value = func(None)
-        func.output_type = 'swf'
-        return func
-    return wrapped
+def swf_output(func):
+    func.is_output = True
+    func.default_output_value = func(None)
+    func.output_type = 'swf'
+    return func
 
 
 def generate_getter(label, default_value):
