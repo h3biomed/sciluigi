@@ -69,12 +69,12 @@ def _parse_target(target, label, is_getter=False, is_optional=False):
     elif isinstance(target, dict):
         parsed_target = {}
         for key in target:
-            parsed_target[key] = _parse_target(target[key])
+            parsed_target[key] = _parse_target(target[key], label, is_getter, is_optional)
         return parsed_target
     elif isinstance(target, list):
         parsed_target = []
         for individual_target in target:
-            parsed_target.append(_parse_target(individual_target))
+            parsed_target.append(_parse_target(individual_target, label, is_getter, is_optional))
         return parsed_target
     else:
         raise ValueError('Invalid value type. Must be TargetInfo, dict, or list')
