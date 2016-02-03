@@ -121,7 +121,7 @@ class TaskMeta(type):
                 attrs[name] = property(fget=generate_getter(name, method.default_input_value),
                                        fset=generate_input_setter(name, method.is_optional_input))
             elif hasattr(method, 'is_output'):
-                attrs[name] = property(fget=generate_getter(name, method.default_output_value_value),
+                attrs[name] = property(fget=generate_getter(name, method.default_output_value),
                                        fset=generate_output_setter(name, method.output_type))
         return super(TaskMeta, mcs).__new__(mcs, clsname, bases, attrs)
 
