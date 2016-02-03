@@ -55,7 +55,44 @@ def swf_output(func):
     return func
 
 
-def generate_getter(label, default_value):
+def _parse_target(target, label, is_getter=False, is_optional=False):
+    if isinstance(target, sciluigi.TargetInfo):
+        # For getters, make sure that empty targets are changed to None for non-optional inputs and throw an error
+        # for optional inputs
+        if is_getter and target.is_empty():
+            if is_optional:
+                raise ValueError('Empty target found for non-optional input %s' % label)
+            else:
+                return None
+        else:
+            return target
+    elif isinstance(target, dict):
+        parsed_target = {}
+        for key in target:
+            parsed_target[key] = _parse_target(target[key])
+        return parsed_target
+    elif isinstance(target, list):
+        parsed_target = []
+        for individual_target in target:
+            parsed_target.append(_parse_target(individual_target))
+        return parsed_target
+    else:
+        raise ValueError('Invalid value type. Must be TargetInfo, dict, or list')
+
+
+def generate_input_getter(label, default_value, is_optional):
+    private_label = '_' + label
+
+    def return_func(self_arg):
+        try:
+            return _parse_target(getattr(self_arg, private_label), label, is_getter=True, is_optional=is_optional)
+        except AttributeError:
+            return default_value
+
+    return return_func
+
+
+def generate_output_getter(label, default_value):
     private_label = '_' + label
 
     def return_func(self_arg):
@@ -70,30 +107,8 @@ def generate_getter(label, default_value):
 def generate_input_setter(label, is_optional):
     private_label = '_' + label
 
-    def _parse_target(target):
-        if isinstance(target, sciluigi.TargetInfo):
-            if target.is_empty():
-                if is_optional:
-                    raise ValueError('Cannot link empty target to non-optional input %s' % label)
-                else:
-                    return None
-            else:
-                return target
-        elif isinstance(target, dict):
-            parsed_target = {}
-            for key in target:
-                parsed_target[key] = _parse_target(target[key])
-            return parsed_target
-        elif isinstance(target, list):
-            parsed_target = []
-            for individual_target in target:
-                parsed_target.append(_parse_target(individual_target))
-            return parsed_target
-        else:
-            raise ValueError('Invalid value type. Must be TargetInfo, dict, or list')
-
     def return_func(self_arg, val):
-        setattr(self_arg, private_label, _parse_target(val))
+        setattr(self_arg, private_label, _parse_target(val, label, is_getter=False, is_optional=is_optional))
 
     return return_func
 
@@ -117,14 +132,15 @@ class TaskMeta(type):
     def __new__(mcs, clsname, bases, attrs):
         for name, method in attrs.iteritems():
             if hasattr(method, 'is_input'):
-                attrs[name] = property(fget=generate_getter(name, method.default_input_value),
+                attrs[name] = property(fget=generate_input_getter(name, method.default_input_value,
+                                                                  method.is_optional_input),
                                        fset=generate_input_setter(name, method.is_optional_input))
             elif hasattr(method, 'is_output') and method.output_type == 'task':
                 # Task outputs are immutable and should always return the defined method
                 attrs[name] = property(fget=method, fset=None)
             elif hasattr(method, 'is_output') and method.output_type == 'swf':
                 # SWF outputs can be chained, just like inputs.  The defined method simply returns the default value
-                attrs[name] = property(fget=generate_getter(name, method.default_output_value),
+                attrs[name] = property(fget=generate_output_getter(name, method.default_output_value),
                                        fset=generate_output_setter(name, method.output_type))
         return super(TaskMeta, mcs).__new__(mcs, clsname, bases, attrs)
 
