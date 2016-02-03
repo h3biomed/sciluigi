@@ -50,40 +50,7 @@ class S3TargetInfo(TargetInfo):
         s3 = boto3.resource('s3')
         (bucket, key) = S3Client._path_to_bucket_and_key(self.path)
         return s3.ObjectSummary(bucket, key).size == 0
-
-
-class Input(object):
-    def __init__(self, initial_value=None, is_optional=False):
-        self._is_optional = is_optional
-        self._value = initial_value
-
-    def get(self):
-        return self._value
-
-    def link(self, val):
-        if isinstance(val, TargetInfo):
-            self._value = self._parse_target(val)
-        elif isinstance(val, dict):
-            parsed_val = {}
-            for key in val:
-                parsed_val[key] = self._parse_target(val[key])
-            self._value = parsed_val
-        elif isinstance(val, list):
-            parsed_val = []
-            for individual_val in val:
-                parsed_val.append(self._parse_target(individual_val))
-            self._value = parsed_val
-        else:
-            raise ValueError('Invalid value type. Must be TargetInfo, dict, or list')
-
-    def _parse_target(self, target):
-        if target.is_empty():
-            if self._is_optional:
-                raise ValueError('Cannot link empty target to a non-optional input')
-            else:
-                return None
-        else:
-            return target
+    
 
 # ==============================================================================
 
