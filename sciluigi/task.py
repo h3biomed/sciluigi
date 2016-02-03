@@ -126,7 +126,7 @@ class TaskMeta(type):
         return super(TaskMeta, mcs).__new__(mcs, clsname, bases, attrs)
 
 
-class MergedMeta(luigi.Task.__metaclass__, TaskMeta):
+class MergedMeta(luigi.Register, TaskMeta):
     # Fixes multiple inheritance metaclass conflict
     pass
 
