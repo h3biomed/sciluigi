@@ -9,7 +9,7 @@ class SubWorkflowTask(sciluigi.task.Task):
 
     def __init__(self, *args, **kwargs):
         super(SubWorkflowTask, self).__init__(*args, **kwargs)
-        #self.sub_workflow()
+        self.sub_workflow()
 
     def new_task(self, instance_name, cls, **kwargs):
         instance_name = '%s - %s' % (self.instance_name, instance_name)
@@ -26,4 +26,3 @@ class SubWorkflowTask(sciluigi.task.Task):
         for output in outputs:
             requirements.append(output.task)
         return requirements
-    
