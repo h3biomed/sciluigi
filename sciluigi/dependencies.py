@@ -80,12 +80,10 @@ class DependencyHelpers(object):
         for attrname, attrval in iteritems(self.__dict__):
             if 'in_' == attrname[0:3]:
                 upstream_tasks = self._parse_inputitem(attrval, upstream_tasks)
-            elif 'opt_in_' == attrname[0:7]:
-                upstream_tasks = self._parse_inputitem(attrval, upstream_tasks, is_optional=True)
 
         return upstream_tasks
 
-    def _parse_inputitem(self, val, tasks, is_optional=False):
+    def _parse_inputitem(self, val, tasks):
         '''
         Recursively loop through lists of TargetInfos, or
         callables returning TargetInfos, or lists of ...
