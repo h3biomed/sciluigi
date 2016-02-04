@@ -22,7 +22,6 @@ class SubWorkflowTask(sciluigi.task.Task):
 
     def requires(self):
         requirements = [super(SubWorkflowTask, self).requires()]
-        outputs = luigi.task.flatten(self.output())
-        for output in outputs:
+        for output in self.output_infos():
             requirements.append(output.task)
         return requirements
