@@ -9,6 +9,7 @@ from luigi.s3 import S3Client, S3Target
 from luigi.six import iteritems
 import os
 
+
 # ==============================================================================
 
 class TargetInfo(object):
@@ -35,8 +36,8 @@ class TargetInfo(object):
         '''
         return self.target.open(*args, **kwargs)
 
-# ==============================================================================
 
+# ==============================================================================
 
 class S3TargetInfo(TargetInfo):
     def __init__(self, task, path, is_optional=False, format=None, client=None):
