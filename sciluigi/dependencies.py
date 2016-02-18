@@ -77,8 +77,9 @@ class DependencyHelpers(object):
         for use in luigi's requires() method.
         '''
         upstream_tasks = []
-        for input_name, input_val in iteritems(self.inputs):
-            upstream_tasks = self._parse_inputitem(input_val, upstream_tasks)
+        for attrname, attrval in iteritems(self.__dict__):
+            if 'in_' == attrname[0:3]:
+                upstream_tasks = self._parse_inputitem(attrval, upstream_tasks)
 
         return upstream_tasks
 
@@ -125,8 +126,11 @@ class DependencyHelpers(object):
 
     def _output_infos(self):
         infos = []
-        for output_name, output_val in iteritems(self.outputs):
-            infos = self._parse_outputitem(output_val, infos)
+        for attrname in dir(self):
+            attrval = getattr(self, attrname)
+            if attrname[0:4] == 'out_':
+                infos = self._parse_outputitem(attrval, infos)
+
         return infos
 
     def _parse_outputitem(self, val, target_infos):
