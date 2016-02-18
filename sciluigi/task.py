@@ -100,3 +100,10 @@ class ExternalTask(
     '''
     workflow_task = luigi.Parameter()
     instance_name = luigi.Parameter()
+
+    def __init__(self, *args, **kwargs):
+        super(Task, self).__init__(*args, **kwargs)
+        self.initialize_inputs_and_outputs()
+
+    def initialize_input_and_outputs(self):
+        raise NotImplementedError
