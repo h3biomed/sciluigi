@@ -37,6 +37,13 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     workflow_task = luigi.Parameter()
     instance_name = luigi.Parameter()
 
+    def __init__(self, *args, **kwargs):
+        super(Task, self).__init__(*args, **kwargs)
+        self.initialize_inputs_and_outputs()
+
+    def initialize_input_and_outputs(self):
+        raise NotImplementedError
+
     def ex_local(self, command):
         '''
         Execute command locally (not through resource manager).
