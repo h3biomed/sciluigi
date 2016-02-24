@@ -69,6 +69,13 @@ class DependencyHelpers(object):
         Implement luigi API method by returning upstream tasks
         '''
         return self._upstream_tasks()
+        
+    def get_input_attrs(self):
+        input_attrs = []
+        for attrname, attrval in iteritems(self.__dict__):
+            if 'in_' == attrname[0:3]:
+                input_attrs.append(attrval)
+        return input_attrs
 
     def _upstream_tasks(self):
         '''
@@ -77,9 +84,8 @@ class DependencyHelpers(object):
         for use in luigi's requires() method.
         '''
         upstream_tasks = []
-        for attrname, attrval in iteritems(self.__dict__):
-            if 'in_' == attrname[0:3]:
-                upstream_tasks = self._parse_inputitem(attrval, upstream_tasks)
+        for attrval in self.get_input_attrs():
+            upstream_tasks = self._parse_inputitem(attrval, upstream_tasks)
 
         return upstream_tasks
 
