@@ -162,4 +162,7 @@ class DependencyHelpers(object):
         return target_infos
 
     def _is_property(self, attrname):
-        return isinstance(getattr(DependencyHelpers, attrname), property)
+        if hasattr(DependencyHelpers, attrname):
+            return isinstance(getattr(DependencyHelpers, attrname), property)
+        else:
+            return False
