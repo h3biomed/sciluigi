@@ -133,6 +133,8 @@ class DependencyHelpers(object):
     def _output_infos(self):
         infos = []
         for attrname in dir(self):
+            if self._is_property(attrname):
+                continue # Properties can't be outputs
             attrval = getattr(self, attrname)
             if attrname[0:4] == 'out_':
                 infos = self._parse_outputitem(attrval, infos)
@@ -158,3 +160,6 @@ class DependencyHelpers(object):
         else:
             raise Exception('Input item is neither callable, TargetInfo, nor list: %s' % val)
         return target_infos
+
+    def _is_property(self, attrname):
+        return isinstance(getattr(DependencyHelpers, attrname), property)
