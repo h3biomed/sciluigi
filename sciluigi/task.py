@@ -41,7 +41,7 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
         super(Task, self).__init__(*args, **kwargs)
         self.initialize_inputs_and_outputs()
 
-    def initialize_input_and_outputs(self):
+    def initialize_inputs_and_outputs(self):
         raise NotImplementedError
 
     def ex_local(self, command):
