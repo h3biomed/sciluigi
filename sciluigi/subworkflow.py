@@ -15,8 +15,6 @@ class SubWorkflowTask(sciluigi.task.Task):
         raise NotImplementedError
 
     def requires(self):
-        self.sub_workflow()
+        endpoints = [self.sub_workflow()]
         requirements = [super(SubWorkflowTask, self).requires()]
-        for output in self.output_infos():
-            requirements.append(output.task)
-        return requirements
+        return endpoints + requirements
