@@ -9,6 +9,10 @@ from luigi.s3 import S3Client, S3Target
 from luigi.six import iteritems
 import os
 
+import logging
+
+log = logging.getLogger('sciluigi-interface')
+
 
 # ==============================================================================
 
@@ -68,6 +72,7 @@ class DependencyHelpers(object):
         '''
         Implement luigi API method by returning upstream tasks
         '''
+        log.info('Getting requirements for ' + self.__class__.__name__)
         return self._upstream_tasks()
         
     def get_input_attrs(self):
