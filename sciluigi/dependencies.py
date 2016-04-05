@@ -151,7 +151,7 @@ class DependencyHelpers(object):
         if isinstance(val, TaskInput):
             tasks += val.tasks
         else:
-            raise Exception('Input item is neither callable, TaskInput, nor list: %s' % val)
+            raise Exception('Input item is neither callable nor a TaskInput: %s' % val)
         return tasks
 
     # --------------------------------------------------------
