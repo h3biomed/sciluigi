@@ -30,7 +30,12 @@ class TaskInput(object):
         self.target_infos = []
 
     def connect(self, target_info):
-        self.target_infos.append(target_info)
+        if hasattr(target_info, 'target_infos'):
+            # If the user tried to connect a TaskInput, just connect all of the TaskInput's TargetInfos
+            for info in target_info.target_infos:
+                self.connect(info)
+        else:
+            self.target_infos.append(target_info)
 
     def disconnect(self, target_info):
         self.target_infos.remove(target_info)
