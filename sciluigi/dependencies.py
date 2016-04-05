@@ -27,6 +27,12 @@ class TaskInput(object):
         return [i.task for i in self.target_infos]
 
     @property
+    def path(self):
+        if len(self.target_infos) == 1:
+            return self.target_infos[0].path
+        raise ValueError('This TaskInput is connected to more than one TargetInfo')
+
+    @property
     def target(self):
         if len(self.target_infos) == 1:
             return self.target_infos[0].target
