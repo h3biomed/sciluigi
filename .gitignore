@@ -5,3 +5,4 @@ dist
 *.egg-info
 log
 .idea
+test/temp_test.py

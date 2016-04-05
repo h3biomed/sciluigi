@@ -16,6 +16,26 @@ log = logging.getLogger('sciluigi-interface')
 
 # ==============================================================================
 
+class TaskInput(object):
+
+    @property
+    def targets(self):
+        return [i.target for i in self.target_infos]
+
+    @property
+    def tasks(self):
+        return [i.task for i in self.target_infos]
+
+    def __init__(self):
+        self.target_infos = []
+
+    def connect(self, target_info):
+        self.target_infos.append(target_info)
+
+    def disconnect(self, target_info):
+        self.target_infos.remove(target_info)
+
+
 class TargetInfo(object):
     '''
     Class to be used for sending specification of which target, from which
@@ -102,16 +122,10 @@ class DependencyHelpers(object):
         '''
         if callable(val):
             val = val()
-        if isinstance(val, TargetInfo):
-            tasks.append(val.task)
-        elif isinstance(val, list):
-            for valitem in val:
-                tasks = self._parse_inputitem(valitem, tasks)
-        elif isinstance(val, dict):
-            for _, valitem in iteritems(val):
-                tasks = self._parse_inputitem(valitem, tasks)
+        if isinstance(val, TaskInput):
+            tasks += val.tasks
         else:
-            raise Exception('Input item is neither callable, TargetInfo, nor list: %s' % val)
+            raise Exception('Input item is neither callable, TaskInput, nor list: %s' % val)
         return tasks
 
     # --------------------------------------------------------
