@@ -47,6 +47,9 @@ class TaskInput(object):
     def __init__(self):
         self.target_infos = []
 
+    def __iter__(self):
+        return self.target_infos.__iter__()
+
     def connect(self, target_info):
         if hasattr(target_info, 'target_infos'):
             # If the user tried to connect a TaskInput, just connect all of the TaskInput's TargetInfos
