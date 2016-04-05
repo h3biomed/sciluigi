@@ -26,6 +26,18 @@ class TaskInput(object):
     def tasks(self):
         return [i.task for i in self.target_infos]
 
+    @property
+    def target(self):
+        if len(self.target_infos) == 1:
+            return self.target_infos[0].target
+        raise ValueError('This TaskInput is connected to more than one TargetInfo')
+
+    @property
+    def task(self):
+        if len(self.target_infos) == 1:
+            return self.target_infos[0].task
+        raise ValueError('This TaskInput is connected to more than one TargetInfo')
+
     def __init__(self):
         self.target_infos = []
 
