@@ -46,17 +46,23 @@ class TaskInput(object):
 
     def __init__(self):
         self.target_infos = []
+        self.downstream_inputs = []
 
     def __iter__(self):
         return self.target_infos.__iter__()
 
-    def connect(self, target_info):
-        if hasattr(target_info, 'target_infos'):
-            # If the user tried to connect a TaskInput, just connect all of the TaskInput's TargetInfos
-            for info in target_info.target_infos:
+    def connect(self, connection):
+        if hasattr(connection, 'target_infos'):
+            # If the user tried to connect a TaskInput, connect all of the TaskInput's TargetInfos to self
+            # Then add self to the TaskInput's downstream connections
+            for info in connection.target_infos:
                 self.connect(info)
+            connection.downstream_inputs.append(self)
         else:
-            self.target_infos.append(target_info)
+            # If the user is connecting a TargetInfo, add the TargetInfo to this input and any downstream inputs
+            self.target_infos.append(connection)
+            for downstream_input in self.downstream_inputs:
+                downstream_input.target_infos.append(connection)
 
     def disconnect(self, target_info):
         self.target_infos.remove(target_info)
