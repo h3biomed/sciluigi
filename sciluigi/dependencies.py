@@ -55,18 +55,11 @@ class TaskInput(object):
         if hasattr(connection, 'target_infos'):
             # If the user tried to connect a TaskInput, connect all of the TaskInput's TargetInfos to self
             # Then add self to the TaskInput's downstream connections
-            try:
-                log.info('Connecting TaskInput {}'.format([t.task.instance_name for t in self.target_infos][0]))
-            except:
-                log.info('Connecting TaskInput')
-                pass
             for info in connection.target_infos:
                 self.connect(info)
             connection.downstream_inputs.add(self)
         else:
             # If the user is connecting a TargetInfo, add the TargetInfo to this input and any downstream inputs
-            log.info('Connecting TargetInfo {}'.format(connection.task.instance_name))
-            log.info(connection)
             self.target_infos.add(connection)
             for downstream_input in self.downstream_inputs:
                 downstream_input.target_infos.add(connection)
@@ -131,7 +124,6 @@ class DependencyHelpers(object):
         '''
         Implement luigi API method by returning upstream tasks
         '''
-        log.info('Getting requirements for ' + self.__class__.__name__)
         return self._upstream_tasks()
         
     def get_input_attrs(self):
