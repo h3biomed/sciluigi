@@ -58,6 +58,7 @@ class TaskInput(object):
             try:
                 log.info('Connecting TaskInput {}'.format([t.task.instance_name for t in self.target_infos][0]))
             except:
+                log.info('Connecting TaskInput')
                 pass
             for info in connection.target_infos:
                 self.connect(info)
