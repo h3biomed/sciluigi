@@ -49,7 +49,7 @@ def setup_logging():
     sciluigi_logger.addHandler(sciluigi_file_handler)
     sciluigi_logger.setLevel(logging.DEBUG)
 
-setup_logging()
+#setup_logging()
 
 def run(*args, **kwargs):
     '''
