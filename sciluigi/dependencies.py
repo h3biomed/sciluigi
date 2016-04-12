@@ -45,8 +45,8 @@ class TaskInput(object):
         raise ValueError('This TaskInput is connected to more than one TargetInfo')
 
     def __init__(self):
-        self.target_infos = []
-        self.downstream_inputs = []
+        self.target_infos = set([])
+        self.downstream_inputs = set([])
 
     def __iter__(self):
         return self.target_infos.__iter__()
@@ -55,14 +55,16 @@ class TaskInput(object):
         if hasattr(connection, 'target_infos'):
             # If the user tried to connect a TaskInput, connect all of the TaskInput's TargetInfos to self
             # Then add self to the TaskInput's downstream connections
+            log.info('Connecting TaskInput')
             for info in connection.target_infos:
                 self.connect(info)
-            connection.downstream_inputs.append(self)
+            connection.downstream_inputs.add(self)
         else:
             # If the user is connecting a TargetInfo, add the TargetInfo to this input and any downstream inputs
-            self.target_infos.append(connection)
+            log.info('Connecting TargetInfo')
+            self.target_infos.add(connection)
             for downstream_input in self.downstream_inputs:
-                downstream_input.target_infos.append(connection)
+                downstream_input.target_infos.add(connection)
 
     def disconnect(self, target_info):
         self.target_infos.remove(target_info)
