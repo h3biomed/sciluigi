@@ -55,7 +55,10 @@ class TaskInput(object):
         if hasattr(connection, 'target_infos'):
             # If the user tried to connect a TaskInput, connect all of the TaskInput's TargetInfos to self
             # Then add self to the TaskInput's downstream connections
-            log.info('Connecting TaskInput {}'.format([t.task.instance_name for t in self.target_infos][0]))
+            try:
+                log.info('Connecting TaskInput {}'.format([t.task.instance_name for t in self.target_infos][0]))
+            except:
+                pass
             for info in connection.target_infos:
                 self.connect(info)
             connection.downstream_inputs.add(self)
