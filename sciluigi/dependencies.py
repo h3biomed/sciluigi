@@ -29,19 +29,19 @@ class TaskInput(object):
     @property
     def path(self):
         if len(self.target_infos) == 1:
-            return next(iter(self.target_infos)).path
+            return [t.path for t in self.target_infos][0]
         raise ValueError('This TaskInput must be connected to more than one TargetInfo')
 
     @property
     def target(self):
         if len(self.target_infos) == 1:
-            return next(iter(self.target_infos)).target
+            return [t.target for t in self.target_infos][0]
         raise ValueError('This TaskInput must be connected to more than one TargetInfo')
 
     @property
     def task(self):
         if len(self.target_infos) == 1:
-            return next(iter(self.target_infos)).task
+            return [t.task for t in self.target_infos][0]
         raise ValueError('This TaskInput must be connected to more than one TargetInfo')
 
     def __init__(self):
@@ -55,7 +55,7 @@ class TaskInput(object):
         if hasattr(connection, 'target_infos'):
             # If the user tried to connect a TaskInput, connect all of the TaskInput's TargetInfos to self
             # Then add self to the TaskInput's downstream connections
-            log.info('Connecting TaskInput {}'.format(next(iter(connection.target_infos)).task.instance_name))
+            log.info('Connecting TaskInput {}'.format([t.task.instance_name for t in self.target_infos][0]))
             for info in connection.target_infos:
                 self.connect(info)
             connection.downstream_inputs.add(self)
