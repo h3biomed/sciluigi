@@ -6,7 +6,6 @@ import luigi
 import logging
 import sciluigi.util
 
-LOGFMT_STREAM = '%(asctime)s | %(levelname)8s | %(message)s'
 LOGFMT_LUIGI = '%(asctime)s %(levelname)8s    LUIGI %(message)s'
 LOGFMT_SCILUIGI = '%(asctime)s %(levelname)8s SCILUIGI %(message)s'
 DATEFMT = '%Y-%m-%d %H:%M:%S'
@@ -16,10 +15,8 @@ def setup_logging():
     Set up SciLuigi specific logging
     '''
     sciluigi.util.ensuredir('log')
-    log_path = 'log/sciluigi_run_%s_detailed.log' % sciluigi.util.timepath()
 
     # Formatter
-    stream_formatter = logging.Formatter(LOGFMT_STREAM, DATEFMT)
     luigi_log_formatter = logging.Formatter(LOGFMT_LUIGI, DATEFMT)
     sciluigi_log_formatter = logging.Formatter(LOGFMT_SCILUIGI, DATEFMT)
 
