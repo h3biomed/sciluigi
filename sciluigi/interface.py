@@ -10,11 +10,8 @@ LOGFMT_LUIGI = '%(asctime)s %(levelname)8s    LUIGI %(message)s'
 LOGFMT_SCILUIGI = '%(asctime)s %(levelname)8s SCILUIGI %(message)s'
 DATEFMT = '%Y-%m-%d %H:%M:%S'
 
+
 def setup_logging():
-    '''
-    Set up SciLuigi specific logging
-    '''
-    sciluigi.util.ensuredir('log')
 
     # Formatter
     luigi_log_formatter = logging.Formatter(LOGFMT_LUIGI, DATEFMT)

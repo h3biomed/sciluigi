@@ -29,7 +29,6 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
     _wflogpath = ''
     _hasloggedstart = False
     _hasloggedfinish = False
-    _hasaddedhandler = False
 
     def _ensure_timestamp(self):
         '''
@@ -37,17 +36,6 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         if self._wfstart == '':
             self._wfstart = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S_%f')
-
-    def get_wflogpath(self):
-        '''
-        Get the path to the workflow-speicfic log file.
-        '''
-        if self._wflogpath == '':
-            self._ensure_timestamp()
-            clsname = self.__class__.__name__.lower()
-            logpath = 'log/workflow_' + clsname + '_started_{t}.log'.format(t=self._wfstart)
-            self._wflogpath = logpath
-        return self._wflogpath
 
     def get_auditdirpath(self):
         '''
@@ -85,21 +73,10 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         Implementation of Luigi API method.
         '''
-        if not self._hasaddedhandler:
-            wflog_formatter = logging.Formatter(
-                    sciluigi.interface.LOGFMT_STREAM,
-                    sciluigi.interface.DATEFMT)
-            wflog_file_handler = logging.FileHandler(self.output()['log'].path)
-            wflog_file_handler.setLevel(logging.INFO)
-            wflog_file_handler.setFormatter(wflog_formatter)
-            log.addHandler(wflog_file_handler)
-            luigilog = logging.getLogger('luigi-interface')
-            luigilog.addHandler(wflog_file_handler)
-            self._hasaddedhandler = True
         clsname = self.__class__.__name__
         if not self._hasloggedstart:
             log.info('-'*80)
-            log.info('SciLuigi: %s Workflow Started (logging to %s)', clsname, self.get_wflogpath())
+            log.info('SciLuigi: %s Workflow Started', clsname)
             log.info('-'*80)
             self._hasloggedstart = True
         workflow_output = self.workflow()
@@ -113,20 +90,19 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         Implementation of Luigi API method
         '''
-        return {'log': luigi.LocalTarget(self.get_wflogpath()),
-                'audit': luigi.LocalTarget(self.get_auditlogpath())}
+        return luigi.LocalTarget(self.get_auditlogpath())
 
     def run(self):
         '''
         Implementation of Luigi API method
         '''
-        if self.output()['audit'].exists():
+        if self.output().exists():
             errmsg = ('Audit file already exists, '
-                      'when trying to create it: %s') % self.output()['audit'].path
+                      'when trying to create it: %s') % self.output().path
             log.error(errmsg)
             raise Exception(errmsg)
         else:
-            with self.output()['audit'].open('w') as auditfile:
+            with self.output().open('w') as auditfile:
                 for taskname in sorted(self._tasks):
                     taskaudit_path = os.path.join(self.get_auditdirpath(), taskname)
                     if os.path.exists(taskaudit_path):
@@ -134,7 +110,7 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         clsname = self.__class__.__name__
         if not self._hasloggedfinish:
             log.info('-'*80)
-            log.info('SciLuigi: %s Workflow Finished (workflow log at %s)', clsname, self.get_wflogpath())
+            log.info('SciLuigi: %s Workflow Finished', clsname)
             log.info('-'*80)
             self._hasloggedfinish = True
 
