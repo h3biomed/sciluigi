@@ -6,8 +6,8 @@ import luigi
 import logging
 import sciluigi.util
 
-LOGFMT_LUIGI = '%(asctime)s | %(levelname)8s |    LUIGI %(message)s'
-LOGFMT_SCILUIGI = '%(asctime)s | %(levelname)8s | SCILUIGI %(message)s'
+LOGFMT_LUIGI = '%(asctime)s | %(levelname)8s |    LUIGI | %(message)s'
+LOGFMT_SCILUIGI = '%(asctime)s | %(levelname)8s | SCILUIGI | %(message)s'
 DATEFMT = '%Y-%m-%d %H:%M:%S'
 
 
