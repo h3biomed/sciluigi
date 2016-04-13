@@ -43,7 +43,7 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         self._ensure_timestamp()
         clsname = self.__class__.__name__.lower()
-        audit_dirpath = 'audit/.audit_%s_%s' % (clsname, self._wfstart)
+        audit_dirpath = 'sciluigi-audit/audit_%s_%s' % (clsname, self._wfstart)
         return audit_dirpath
 
     def get_auditlogpath(self):
@@ -52,7 +52,7 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         self._ensure_timestamp()
         clsname = self.__class__.__name__.lower()
-        audit_dirpath = 'audit/workflow_%s_started_%s.audit' % (clsname, self._wfstart)
+        audit_dirpath = 'sciluigi-audit/workflow_%s_started_%s.audit' % (clsname, self._wfstart)
         return audit_dirpath
 
     def add_auditinfo(self, infotype, infolog):
