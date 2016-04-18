@@ -96,6 +96,7 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         Implementation of Luigi API method
         '''
+        log.debug('Running the workflow')
         if self.output().exists():
             errmsg = ('Audit file already exists, '
                       'when trying to create it: %s') % self.output().path
