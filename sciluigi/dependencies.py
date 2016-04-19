@@ -221,7 +221,7 @@ class DependencyHelpers(object):
             for _, valitem in iteritems(val):
                 target_infos = self._parse_outputitem(valitem, target_infos)
         else:
-            raise Exception('Input item is neither callable, TargetInfo, nor list: %s' % val)
+            raise Exception('Input item is neither callable, SubWorkflowOutput, TargetInfo, nor list: %s' % val)
         return target_infos
 
     def _is_property(self, attrname):
