@@ -55,6 +55,8 @@ def setup_logging():
     sciluigi_logger.addHandler(sciluigi_stream_handler)
     sciluigi_logger.setLevel(logging.DEBUG)
 
+    setattr(setup_logging, 'has_run', True)
+
 setup_logging()
 
 
