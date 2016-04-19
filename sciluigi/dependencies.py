@@ -124,7 +124,10 @@ class DependencyHelpers(object):
         '''
         Implement luigi API method by returning upstream tasks
         '''
-        return self._upstream_tasks()
+        reqs = self._upstream_tasks()
+        for req in reqs:
+            log.debug('{0} is a req for {1}'.format(req.instance_name, self.instance_name))
+        return reqs
         
     def get_input_attrs(self):
         input_attrs = []
