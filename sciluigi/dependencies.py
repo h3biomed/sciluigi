@@ -52,6 +52,10 @@ class TaskInput(object):
         return self.target_infos.__iter__()
 
     def connect(self, connection):
+        if hasattr(connection, 'sub_workflow_task'):
+            for info in connection.target_infos:
+                self.connect(info)
+            self.sub_workflow_task = connection.sub_workflow_task
         if hasattr(connection, 'target_infos'):
             # If the user tried to connect a TaskInput, connect all of the TaskInput's TargetInfos to self
             # Then add self to the TaskInput's downstream connections
@@ -73,6 +77,11 @@ class SubWorkflowOutput(TaskInput):
     def __init__(self, sub_workflow_task):
         super(SubWorkflowOutput, self).__init__()
         self.sub_workflow_task = sub_workflow_task
+
+    def connect(self, connection):
+        if hasattr(connection, 'target_infos'):
+            raise Exception('You can only connect TargetInfo objects to a SubWorkflowOuput')
+        super(SubWorkflowOutput, self).connect(connection)
 
 
 class TargetInfo(object):
@@ -161,7 +170,7 @@ class DependencyHelpers(object):
         if callable(val):
             val = val()
 
-        if isinstance(val, SubWorkflowOutput):
+        if hasattr(val, 'sub_workflow_task'):
             tasks += val.sub_workflow_task
         elif isinstance(val, TaskInput):
             tasks += val.tasks
