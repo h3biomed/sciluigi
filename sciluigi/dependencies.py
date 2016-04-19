@@ -30,7 +30,7 @@ class TaskInput(object):
     def path(self):
         if len(self.target_infos) == 1:
             return [t.path for t in self.target_infos][0]
-        raise ValueError('This TaskInput must be connected to more than one TargetInfo')
+        raise ValueError('This TaskInput is connected to more than one TargetInfo')
 
     @property
     def target(self):
@@ -66,6 +66,13 @@ class TaskInput(object):
 
     def disconnect(self, target_info):
         self.target_infos.remove(target_info)
+
+
+class SubWorkflowOutput(TaskInput):
+
+    def __init__(self, sub_workflow_task):
+        super(SubWorkflowOutput, self).__init__()
+        self.sub_workflow_task = sub_workflow_task
 
 
 class TargetInfo(object):
@@ -153,7 +160,10 @@ class DependencyHelpers(object):
         '''
         if callable(val):
             val = val()
-        if isinstance(val, TaskInput):
+
+        if isinstance(val, SubWorkflowOutput):
+            tasks += val.sub_workflow_task
+        elif isinstance(val, TaskInput):
             tasks += val.tasks
         else:
             raise Exception('Input item is neither callable nor a TaskInput: %s' % val)
