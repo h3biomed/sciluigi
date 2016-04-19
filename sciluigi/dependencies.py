@@ -211,6 +211,9 @@ class DependencyHelpers(object):
             val = val()
         if isinstance(val, TargetInfo):
             target_infos.append(val)
+        elif isinstance (val, TaskInput):
+            for info in val:
+                target_infos.append(info)
         elif isinstance(val, list):
             for valitem in val:
                 target_infos = self._parse_outputitem(valitem, target_infos)
