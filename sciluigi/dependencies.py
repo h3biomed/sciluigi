@@ -171,7 +171,7 @@ class DependencyHelpers(object):
             val = val()
 
         if hasattr(val, 'sub_workflow_task'):
-            tasks += val.sub_workflow_task
+            tasks.append(val.sub_workflow_task)
         elif isinstance(val, TaskInput):
             tasks += val.tasks
         else:
