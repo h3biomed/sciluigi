@@ -56,13 +56,15 @@ class TaskInput(object):
             for item in connection:
                 self.connect(item)
         elif hasattr(connection, 'target_infos'):
-            # If the user tried to connect a TaskInput, connect all of the TaskInput's TargetInfos to self
+            # If the user tried to connect a TaskInput, first check if it's a SubWorkflowOutput.  If so, just connect,
+            # the SubWorkflow.  Otherwise, connect all of the TaskInput's TargetInfos to self.
             # Then add self to the TaskInput's downstream connections
-            for info in connection.target_infos:
-                self.connect(info)
-            connection.downstream_inputs.add(self)
             if hasattr(connection, 'sub_workflow_task'):
-                self.sub_workflow_task = connection.sub_workflow_task # Make note of sub_workflow_task if applicable
+                self.sub_workflow_task = connection.sub_workflow_task  # Make note of sub_workflow_task if applicable
+            else:
+                for info in connection.target_infos:
+                    self.connect(info)
+                connection.downstream_inputs.add(self)
         else:
             # If the user is connecting a TargetInfo, add the TargetInfo to this input and any downstream inputs
             self.target_infos.add(connection)
