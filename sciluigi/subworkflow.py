@@ -10,7 +10,8 @@ class SubWorkflowTask(sciluigi.task.Task):
         super(sciluigi.task.Task, self).__init__(*args, **kwargs)
         self.initialize_tasks()
         self.initialize_inputs_and_outputs()
-        self.endpoints = [self.connect_tasks()]
+        #self.endpoints = [self.connect_tasks()]
+        self.connect_tasks()
 
     def initialize_tasks(self):
         raise NotImplementedError
@@ -24,4 +25,5 @@ class SubWorkflowTask(sciluigi.task.Task):
 
     def requires(self):
         log.info('Getting sub-workflow requirements for ' + self.__class__.__name__)
-        return self.endpoints  #+ requirements
+        #return self.endpoints
+        return [info.task for info in self.output_infos()]
