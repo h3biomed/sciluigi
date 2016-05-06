@@ -98,10 +98,6 @@ class TargetInfo(object):
     Class to be used for sending specification of which target, from which
     task, to use, when stitching workflow tasks' outputs and inputs together.
     '''
-    task = None
-    path = None
-    target = None
-
     def __init__(self, task, path, format=None, is_optional=False, is_tmp=False):
         self.task = task
         self.path = path
@@ -132,6 +128,12 @@ class S3TargetInfo(TargetInfo):
         s3 = boto3.resource('s3')
         (bucket, key) = S3Client._path_to_bucket_and_key(self.path)
         return s3.ObjectSummary(bucket, key).size == 0
+
+    def open(self, *args, **kwargs):
+        '''
+        Forward open method, from luigi's target class
+        '''
+        return self.target.open(*args, **kwargs)
 
 
 # ==============================================================================
