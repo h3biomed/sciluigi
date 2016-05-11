@@ -83,8 +83,8 @@ class SubWorkflowOutput(TaskInput):
         self.sub_workflow_task = sub_workflow_task
 
     def connect(self, connection):
-        if hasattr(connection, 'target_infos'):
-            raise Exception('You can only connect TargetInfo objects to a SubWorkflowOuput')
+        # if hasattr(connection, 'target_infos'):
+        #     raise Exception('You can only connect TargetInfo objects to a SubWorkflowOuput')
 
         if isinstance(connection, list):
             for item in connection:
