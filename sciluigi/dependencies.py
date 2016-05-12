@@ -55,6 +55,9 @@ class TaskInput(object):
     def __iter__(self):
         return self.target_infos.__iter__()
 
+    def __getitem__(self, key):
+        return self.target_infos[key]
+
     def connect(self, connection):
         if isinstance(connection, list):
             for item in connection:
