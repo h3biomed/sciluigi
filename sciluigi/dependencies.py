@@ -27,6 +27,10 @@ class TaskInput(object):
         return [i.task for i in self.target_infos]
 
     @property
+    def paths(self):
+        return [t.path for t in self.target_infos]
+
+    @property
     def path(self):
         if len(self.target_infos) == 1:
             return [t.path for t in self.target_infos][0]
