@@ -20,15 +20,15 @@ class TaskInput(object):
 
     @property
     def targets(self):
-        return [i.target for i in self.target_infos]
+        return set([i.target for i in self.target_infos])
 
     @property
     def tasks(self):
-        return [i.task for i in self.target_infos]
+        return set([i.task for i in self.target_infos])
 
     @property
     def paths(self):
-        return [t.path for t in self.target_infos]
+        return set([t.path for t in self.target_infos])
 
     @property
     def path(self):
@@ -54,9 +54,6 @@ class TaskInput(object):
 
     def __iter__(self):
         return self.target_infos.__iter__()
-
-    def __getitem__(self, key):
-        return self.target_infos[key]
 
     def connect(self, connection):
         if isinstance(connection, list):
