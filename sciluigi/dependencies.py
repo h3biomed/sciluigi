@@ -24,7 +24,10 @@ class TaskInput(object):
 
     @property
     def tasks(self):
-        return set([i.task for i in self.target_infos])
+        if self._sub_workflow_task is not None:
+            return set([self._sub_workflow_task])
+        else:
+            return set([i.task for i in self.target_infos])
 
     @property
     def paths(self):
@@ -32,25 +35,26 @@ class TaskInput(object):
 
     @property
     def path(self):
-        if len(self.target_infos) == 1:
-            return [t.path for t in self.target_infos][0]
+        if len(self.paths) == 1:
+            return self.paths.pop()
         raise ValueError('This TaskInput is connected to more than one TargetInfo')
 
     @property
     def target(self):
-        if len(self.target_infos) == 1:
-            return [t.target for t in self.target_infos][0]
+        if len(self.targets) == 1:
+            return self.targets.pop()
         raise ValueError('This TaskInput is connected to more than one TargetInfo')
 
     @property
     def task(self):
-        if len(self.target_infos) == 1:
-            return [t.task for t in self.target_infos][0]
+        if len(self.tasks) == 1:
+            return self.tasks.pop()
         raise ValueError('This TaskInput is connected to more than one TargetInfo')
 
     def __init__(self):
         self.target_infos = set([])
         self.downstream_inputs = set([])
+        self._sub_workflow_task = None
 
     def __iter__(self):
         return self.target_infos.__iter__()
@@ -66,8 +70,8 @@ class TaskInput(object):
             for info in connection.target_infos:
                 self.connect(info)
             connection.downstream_inputs.add(self)
-            if hasattr(connection, 'sub_workflow_task'):
-                self.sub_workflow_task = connection.sub_workflow_task  # Make note of sub_workflow_task if applicable
+            if isinstance(connection, SubWorkflowOutput):
+                self._sub_workflow_task = connection.task  # Make note of sub_workflow_task if applicable
             for downstream_input in self.downstream_inputs:
                 downstream_input.connect(connection)
         else:
@@ -84,7 +88,15 @@ class SubWorkflowOutput(TaskInput):
 
     def __init__(self, sub_workflow_task):
         super(SubWorkflowOutput, self).__init__()
-        self.sub_workflow_task = sub_workflow_task
+        self._sub_workflow_task = sub_workflow_task
+
+    @property
+    def task(self):
+        return self._sub_workflow_task
+
+    @property
+    def tasks(self):
+        return set([self.task])
 
     def connect(self, connection):
         # if hasattr(connection, 'target_infos'):
@@ -185,9 +197,7 @@ class DependencyHelpers(object):
         if callable(val):
             val = val()
 
-        if hasattr(val, 'sub_workflow_task'):
-            tasks.append(val.sub_workflow_task)
-        elif isinstance(val, TaskInput):
+        if isinstance(val, TaskInput):
             tasks += val.tasks
         else:
             raise Exception('Input item is neither callable nor a TaskInput: %s' % val)
@@ -206,6 +216,15 @@ class DependencyHelpers(object):
     def output_infos(self):
         return self._output_infos()
 
+    def get_output_attrs(self):
+        output_attrs = []
+        for attrname, attrval in iteritems(self.__dict__):
+            if self._is_property(attrname):
+                continue  # Properties can't be outputs
+            if 'out_' == attrname[0:4]:
+                output_attrs.append(attrval)
+        return output_attrs
+
     def _output_targets(self):
         '''
         Extract output targets from the TargetInfo objects
@@ -216,12 +235,9 @@ class DependencyHelpers(object):
 
     def _output_infos(self):
         infos = []
-        for attrname in dir(self):
-            if self._is_property(attrname):
-                continue # Properties can't be outputs
-            attrval = getattr(self, attrname)
-            if attrname[0:4] == 'out_':
-                infos = self._parse_outputitem(attrval, infos)
+        output_attrs = self.get_output_attrs()
+        for attrval in output_attrs:
+            infos = self._parse_outputitem(attrval, infos)
 
         return infos
 
