@@ -79,6 +79,7 @@ class SubWorkflowOutput(TaskInput):
     def __init__(self, sub_workflow_task):
         super(SubWorkflowOutput, self).__init__()
         self._sub_workflow_task = sub_workflow_task
+        self.sub_workflow_reqs = set([])
 
     @property
     def task(self):
@@ -96,6 +97,11 @@ class SubWorkflowOutput(TaskInput):
             for item in connection:
                 self.connect(item)
         else:
+            if hasattr(connection, 'tasks'):
+                for task in connection.tasks:
+                    self.sub_workflow_reqs.add(task)
+            else:
+                self.sub_workflow_reqs.add(connection.task)
             super(SubWorkflowOutput, self).connect(connection)
 
 
