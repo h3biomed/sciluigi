@@ -27,4 +27,4 @@ class SubWorkflowTask(sciluigi.task.Task):
         log.info('Getting sub-workflow requirements for ' + self.__class__.__name__)
         #return self.endpoints
 
-        return [info.tasks for output in self.get_output_attrs() for info in output]
+        return [info.task for output in self.get_output_attrs() for info in output]
