@@ -23,6 +23,12 @@ class TaskInput(object):
         return set([i.target for i in self.target_infos])
 
     @property
+    def target(self):
+        if len(self.targets) == 1:
+            return self.targets.pop()
+        raise ValueError('This TaskInput must be connected to only one TargetInfo in order to access this property')
+
+    @property
     def tasks(self):
         if self._sub_workflow_task is not None:
             return set([self._sub_workflow_task])
@@ -30,15 +36,19 @@ class TaskInput(object):
             return set([i.task for i in self.target_infos])
 
     @property
-    def target(self):
-        if len(self.targets) == 1:
-            return self.targets.pop()
-        raise ValueError('This TaskInput must be connected to only one TargetInfo in order to access this property')
-
-    @property
     def task(self):
         if len(self.tasks) == 1:
             return self.tasks.pop()
+        raise ValueError('This TaskInput must be connected to only one TargetInfo in order to access this property')
+
+    @property
+    def paths(self):
+        return set([t.path for t in self.target_infos])
+
+    @property
+    def path(self):
+        if len(self.paths) == 1:
+            return self.paths.pop()
         raise ValueError('This TaskInput must be connected to only one TargetInfo in order to access this property')
 
     def __init__(self):
