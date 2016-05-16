@@ -29,7 +29,7 @@ def setup_logging():
     # limitations under the License.
 
     # use a variable in the function object to determine if it has run before
-    if getattr(setup_logging, 'has_run', False):
+    if getattr(setup_logging, 'has_run', True):
         return
 
     # Formatter
