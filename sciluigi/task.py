@@ -86,7 +86,10 @@ def touch_unfulfilled_optional(task):
     # If an output is optional, touch it if it does not exist so that no errors will be thrown
     for output in luigi.task.flatten(task.output_infos()):
         if output.is_optional and not output.target.exists():
-            task.ex_local('touch ' + output.path)
+            if isinstance(output, sciluigi.S3TargetInfo):
+                output.target.fs.put_string('', output.path)
+            else:
+                task.ex_local('touch ' + output.path)
 
 # ==============================================================================
 
