@@ -48,11 +48,13 @@ def setup_logging():
     luigi_logger = logging.getLogger('luigi-interface')
     luigi_logger.addHandler(luigi_stream_handler)
     luigi_logger.setLevel(logging.DEBUG)
+    luigi_logger.propagate = False
     luigi.interface.setup_interface_logging.has_run = True
 
     sciluigi_logger = logging.getLogger('sciluigi-interface')
     sciluigi_logger.addHandler(sciluigi_stream_handler)
     sciluigi_logger.setLevel(logging.DEBUG)
+    sciluigi_logger.propagate = False
 
     setattr(setup_logging, 'has_run', True)
 
