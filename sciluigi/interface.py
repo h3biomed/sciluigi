@@ -4,7 +4,6 @@ This module contains mappings of methods that are part of the sciluigi API
 
 import luigi
 import logging
-import sciluigi.util
 
 LOGFMT_LUIGI = '%(asctime)s | %(levelname)8s |    LUIGI | %(message)s'
 LOGFMT_SCILUIGI = '%(asctime)s | %(levelname)8s | SCILUIGI | %(message)s'
@@ -56,8 +55,6 @@ def setup_logging():
     sciluigi_logger.setLevel(logging.DEBUG)
 
     setattr(setup_logging, 'has_run', True)
-
-setup_logging()
 
 
 def run(*args, **kwargs):
