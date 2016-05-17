@@ -32,6 +32,11 @@ setup(
     install_requires=[
         'luigi'
         ],
+    entry_points={
+        'console_scripts': [
+            'sciluigi = sciluigi.cmdline:sciluigi_run'
+        ]
+    },
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
