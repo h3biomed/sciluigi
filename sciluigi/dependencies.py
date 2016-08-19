@@ -228,7 +228,13 @@ class DependencyHelpers(object):
             if self._is_property(attrname):
                 continue  # Properties can't be outputs
             if 'out_' == attrname[0:4]:
-                output_attrs.append(attrval)
+                if isinstance(attrval, dict):
+                    for key in attrval:
+                        output_attrs.append(attrval[key])
+                elif isinstance(attrval, list):
+                    output_attrs += attrval
+                else:
+                    output_attrs.append(attrval)
         return output_attrs
 
     def _output_targets(self):
