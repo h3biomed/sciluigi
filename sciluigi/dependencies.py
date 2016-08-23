@@ -70,7 +70,7 @@ class TaskInput(object):
             for info in connection.target_infos:
                 self.connect(info)
             connection.downstream_inputs.add(self)
-            if isinstance(connection, SubWorkflowOutput):
+            if isinstance(connection, SubWorkflowOutput) and not isinstance(self, SubWorkflowOutput):
                 self._sub_workflow_task = connection.task  # Make note of sub_workflow_task if applicable
             for downstream_input in self.downstream_inputs:
                 downstream_input.connect(connection)
