@@ -35,7 +35,7 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     and audit trail logging.
     '''
     workflow_task = luigi.Parameter(significant=False)
-    instance_name = luigi.Parameter()
+    instance_name = luigi.Parameter(significant=False)
 
     def __init__(self, *args, **kwargs):
         super(Task, self).__init__(*args, **kwargs)
