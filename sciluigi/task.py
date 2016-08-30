@@ -34,7 +34,7 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     SciLuigi Task, implementing SciLuigi specific functionality for dependency resolution
     and audit trail logging.
     '''
-    workflow_task = luigi.Parameter()
+    workflow_task = luigi.Parameter(significant=False)
     instance_name = luigi.Parameter()
 
     def __init__(self, *args, **kwargs):
