@@ -30,8 +30,8 @@ class TaskInput(object):
 
     @property
     def tasks(self):
-        if self._sub_workflow_task is not None:
-            return set([self._sub_workflow_task])
+        if len(self._sub_workflow_tasks):
+            return self._sub_workflow_tasks
         else:
             return set([i.task for i in self.target_infos])
 
@@ -54,7 +54,7 @@ class TaskInput(object):
     def __init__(self):
         self.target_infos = set([])
         self.downstream_inputs = set([])
-        self._sub_workflow_task = None
+        self._sub_workflow_tasks = set([])
 
     def __iter__(self):
         return self.target_infos.__iter__()
@@ -71,7 +71,7 @@ class TaskInput(object):
                 self.connect(info)
             connection.downstream_inputs.add(self)
             if isinstance(connection, SubWorkflowOutput) and not isinstance(self, SubWorkflowOutput):
-                self._sub_workflow_task = connection.task  # Make note of sub_workflow_task if applicable
+                self._sub_workflow_tasks.add(connection.task)  # Make note of sub_workflow_task if applicable
             for downstream_input in self.downstream_inputs:
                 downstream_input.connect(connection)
         else:
@@ -88,12 +88,12 @@ class SubWorkflowOutput(TaskInput):
 
     def __init__(self, sub_workflow_task):
         super(SubWorkflowOutput, self).__init__()
-        self._sub_workflow_task = sub_workflow_task
+        self._sub_workflow_tasks = set([sub_workflow_task])
         self.sub_workflow_reqs = set([])
 
     @property
     def task(self):
-        return self._sub_workflow_task
+        return [task for task in self._sub_workflow_tasks][0]
 
     @property
     def tasks(self):
