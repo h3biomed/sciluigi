@@ -217,8 +217,6 @@ class DependencyHelpers(object):
         '''
         Implement luigi API method
         '''
-        if hasattr(self, 'instance_name'):
-            log.info(self.instance_name + ' - ' + str(self._output_targets()))
         return self._output_targets()
 
     def output_infos(self):
