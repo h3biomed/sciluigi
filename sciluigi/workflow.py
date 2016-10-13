@@ -6,6 +6,7 @@ import datetime
 import luigi
 import logging
 import os
+import os.path as op
 import sciluigi
 import sciluigi.audit
 import sciluigi.interface
@@ -90,7 +91,7 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         Implementation of Luigi API method
         '''
-        log.info(self.get_auditlogpath())
+        log.info(op.abspath(self.get_auditlogpath()))
         return luigi.LocalTarget(self.get_auditlogpath())
 
     def run(self):
