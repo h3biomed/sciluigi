@@ -90,6 +90,7 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         Implementation of Luigi API method
         '''
+        log.info(self.get_auditlogpath())
         return luigi.LocalTarget(self.get_auditlogpath())
 
     def run(self):
