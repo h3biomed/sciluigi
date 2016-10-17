@@ -6,3 +6,7 @@ dist
 log
 .idea
 test/temp_test.py
+
+# Sphinx documentation
+doc/_build/
+doc/api/
