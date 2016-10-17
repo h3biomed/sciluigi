@@ -5,22 +5,16 @@
 
 .. include:: ../README.rst
 
-Getting Started
------------------
+User Guides
+------------
 
 .. toctree::
    :maxdepth: 2
 
    overview.rst
-   user_guide.rst
-
-Developing Pipelines
----------------------
-
-.. toctree::
-   :maxdepth: 2
-
-   dev/index.rst
+   tasks.rst
+   workflows.rst
+   subworkflows.rst
 
 API Reference
 -------------
@@ -28,5 +22,4 @@ API Reference
 .. autosummary::
    :toctree: api
 
-    pipelines
-    pipelines.utils
+    sciluigi

@@ -63,8 +63,8 @@ author = u'Samuel Lampa and Michael Soltow'
 # built documents.
 #
 __version__ = get_distribution('h3sciluigi').version  # assume luigi is already installed
-# The short X.Y version.
-version = ".".join(__version__.split(".")[0:2])
+# The short X.Y.Z version.
+version = 'v' + '.'.join(__version__.split('.')[0:3])
 # The full version, including alpha/beta/rc tags.
 release = __version__
 
