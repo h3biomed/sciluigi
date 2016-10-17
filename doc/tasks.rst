@@ -27,7 +27,7 @@ all inputs and outputs for this task should be declared as attributes attached t
     from sciluigi import TargetInfo
 
     def initialize_inputs_and_outputs(self):
-        self.in_fq_file = TaskInput()
+        self.in_fq_files = TaskInput()
         self.in_gtf_file = TaskInput()
 
         self.out_bam_file = TargetInfo(self, 'output.bam')
@@ -42,5 +42,49 @@ to all outputs.  The object you choose depends on whether the output is a local 
 
 The :class:`~sciluigi.dependencies.TaskInput` object will be discussed in the :doc:`workflows documentation <workflows>`.
 
-The :class:`~sciluigi.dependencies.TargetInfo` or an :class:`~sciluigi.dependencies.S3TargetInfo` objects are thin
-wrappers around Luigi's ``Target``
+The :class:`~sciluigi.dependencies.TargetInfo` and :class:`~sciluigi.dependencies.S3TargetInfo` objects are thin
+wrappers around Luigi's `Target <http://luigi.readthedocs.io/en/stable/api/luigi.target.html#luigi.target.Target>`_ and
+`S3Target <http://luigi.readthedocs.io/en/stable/api/luigi.s3.html#luigi.s3.S3Target>`_ objects, respectively.  These
+objects essentially have the same API as the Luigi objects (i.e. they both have ``path`` methods and you can write
+directly to both of them with their ``open`` methods), but they provide extra behind-the-scenes logic that allows
+SciLuigi to accurately construct a dependency graph.
+
+The Task Body
+--------------
+
+The rest of a SciLuigi task is essentially the same as a Luigi task
+(see `Luigi documentation <http://luigi.readthedocs.io/en/stable/tasks.html>`_.  The task body goes inside of a ``run``
+method, and task parameters can be defined with ``luigi.Parameter()``.  However, please note that there are no
+``input`` or ``output`` methods available inside the ``run`` method that allow you to access the task inputs and
+outputs.  Instead, since you defined the inputs and outputs directly on ``self``, you can just access them directly.
+See the example below for a better idea on how to do this.
+
+Example
+-------
+
+.. code-block:: python
+
+    import luigi
+    from sciluigi import TaskInput
+    from sciluigi import TargetInfo
+    from sciluigi import Task
+
+    class MyTask(Task):
+
+        my_param = luigi.Parameter()
+        
+        def initialize_inputs_and_outputs(self):
+            self.in_fq_files = TaskInput()
+            self.in_gtf_file = TaskInput()
+
+            self.out_bam_file = TargetInfo(self, 'output.bam')
+
+        def run(self):
+            print self.my_param
+            for fq_path in self.in_fq_files.paths:
+                print 'We have an input at ' + fq_path
+
+            print 'We have an input at ' + self.in_gtf_file.path
+
+            with self.out_bam_file.open('w') as f:
+                f.write('We would never write to a BAM like this')
