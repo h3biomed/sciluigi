@@ -1,7 +1,7 @@
 .. figure:: http://i.imgur.com/2aMT04J.png
    :alt: SciLuigi Logo
 
-**Please note, this is a fork of the original `SciLuigi repo <https://github.com/pharmbio/sciluigi>`_, created by
+**Please note, this is a fork of the original** `SciLuigi repo <https://github.com/pharmbio/sciluigi>`_, **created by
 Samuel Lampa.  Our repo contains significant changes that have not yet been merged into the original repo, and may
 never be merged.  You can find full documentation for the H3 version INSERT LINK HERE**
 
@@ -23,15 +23,17 @@ working.
 SciLuigi was designed to solve some of these problems, by providing the
 following "features" over vanilla Luigi:
 
--  Separation of dependency definitions from the tasks themselves, for
-   improved modularity and composability.
--  Inputs and outputs implemented as separate fields, a.k.a. "ports", to
-   allow specifying dependencies between specific input and
-   output-targets rather than just between tasks. This is again to let
-   such details of the network definition reside outside the tasks.
--  The fact that inputs and outputs are object fields, also allows
-   auto-completion support to ease the network connection work (Works
-   great e.g. with
+- Separation of dependency definitions from the tasks themselves, for
+  improved modularity and composability.
+
+- Inputs and outputs implemented as separate fields, a.k.a. "ports", to
+  allow specifying dependencies between specific input and
+  output-targets rather than just between tasks. This is again to let
+  such details of the network definition reside outside the tasks.
+
+- The fact that inputs and outputs are object fields, also allows
+  auto-completion support to ease the network connection work (Works
+  great e.g. with
    `jedi-vim <https://github.com/davidhalter/jedi-vim>`__).
 
 Because of Luigi's great easy-to-use API, these changes have been
@@ -44,8 +46,9 @@ More links, background info etc.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The basic idea behind SciLuigi, and a preceding solution to it, was
-presented in workshop (e-Infra MPS 2015) talk: -
-`Slides <http://www.slideshare.net/SamuelLampa/building-workflows-with-spotifys-luigi>`__
+presented in workshop (e-Infra MPS 2015) talk:
+
+- `Slides <http://www.slideshare.net/SamuelLampa/building-workflows-with-spotifys-luigi>`__
 - `Video <https://www.youtube.com/watch?v=f26PqSXZdWM>`__
 
 See also `this collection of
@@ -57,16 +60,18 @@ Contributors
 ------------
 
 -  `Samuel Lampa <https://github.com/samuell>`__
+
 -  `Jeff C Johnson <https://github.com/jeffcjohnson>`__
 
 Acknowledgements
 ----------------
 
-This work is funded by: - `Faculty grants of the dept. of Pharmaceutical
-Biosciences, Uppsala University <http://www.farmbio.uu.se>`__ -
-`Bioinformatics Infrastructure for Life Sciences,
-BILS <https://bils.se>`__
+This work is funded by:
 
-Many ideas and inspiration for the API is taken from: - `John Paul
-Morrison's invention and works on Flow-Based
-Programming <jpaulmorrison.com/fbp>`__
+- `Faculty grants of the dept. of Pharmaceutical
+Biosciences, Uppsala University <http://www.farmbio.uu.se>`__
+
+- `Bioinformatics Infrastructure for Life Sciences, BILS <https://bils.se>`__
+
+Many ideas and inspiration for the API is taken from:
+- `John Paul Morrison's invention and works on Flow-Based Programming <jpaulmorrison.com/fbp>`__
