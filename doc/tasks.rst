@@ -18,8 +18,9 @@ Working with Task Inputs and Outputs
 -------------------------------------
 
 The biggest structural difference between SciLuigi tasks and Luigi tasks is that SciLuigi tasks do not declare
-``requires`` and ``ouptut``.  Instead, a simple ``initialize_inputs_and_outputs`` method is called.  In this method,
-all inputs and outputs for this task should be declared as attributes attached to ``self``, as in the following example:
+``requires`` and ``ouptut``.  Instead, a simple :meth:`~sciluigi.task.Task.initialize_inputs_and_outputs` method is
+called.  In this method, all inputs and outputs for this task should be declared as attributes attached to ``self``, as
+in the following example:
 
 .. code-block:: python
 
@@ -53,11 +54,17 @@ The Task Body
 --------------
 
 The rest of a SciLuigi task is essentially the same as a Luigi task
-(see `Luigi documentation <http://luigi.readthedocs.io/en/stable/tasks.html>`_.  The task body goes inside of a ``run``
-method, and task parameters can be defined with ``luigi.Parameter()``.  However, please note that there are no
-``input`` or ``output`` methods available inside the ``run`` method that allow you to access the task inputs and
-outputs.  Instead, since you defined the inputs and outputs directly on ``self``, you can just access them directly.
-See the example below for a better idea on how to do this.
+(see `Luigi documentation <http://luigi.readthedocs.io/en/stable/tasks.html>`_.  The task body goes inside of a
+:meth:`~sciluigi.task.Task.run` method, and task parameters can be defined with ``luigi.Parameter()``.  However, please
+note that there are no ``input`` or ``output`` methods available inside the :meth:`~sciluigi.task.Task.run` method that
+allow you to access the task inputs and outputs.  Instead, since you defined the inputs and outputs directly on
+``self``, you can just access them directly.
+
+Often you will access the :attr:`~sciluigi.dependencies.TaskInput.path` attribute of an input so that you can
+manipulate it.  However, it is possible for more than one file to be connected to a :class:`~sciluigi.dependencies.TaskInput`.
+If this is the case, you can get a list of the paths of all connected files through the
+:attr:`~sciluigi.dependencies.TaskInput.paths`` attribute.  The :attr:`~sciluigi.dependencies.TaskInput.path` attribute
+will throw an exception if more than one file has been connected to the input.
 
 Example
 -------
@@ -81,6 +88,7 @@ Example
 
         def run(self):
             print self.my_param
+
             for fq_path in self.in_fq_files.paths:
                 print 'We have an input at ' + fq_path
 
