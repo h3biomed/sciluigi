@@ -1,7 +1,7 @@
 Getting Started
 ================
 
-Installation and Upgrading
+Installing and Upgrading
 ---------------------------
 
 Currently, the best way to install ``sciluigi`` and all of its dependencies is through the pre-built wheels stored
@@ -13,6 +13,8 @@ For now, use the following command to install ``sciluigi``:
 .. code-block:: none
 
     pip install --upgrade -I --no-index --find-links /h3/g/bi/projects/pipelines/wheels sciluigi
+
+You can upgrade the code using the same command.
 
 Overview
 ---------

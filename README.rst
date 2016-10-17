@@ -1,7 +1,7 @@
 .. figure:: http://i.imgur.com/2aMT04J.png
    :alt: SciLuigi Logo
 
-**Please note, this is a fork of the original** `SciLuigi repo <https://github.com/pharmbio/sciluigi>`_, **created by
+**Please note, this is a fork of the original** |sciluigi repo|_, **created by
 Samuel Lampa.  Our repo contains significant changes that have not yet been merged into the original repo, and may
 never be merged.  You can find full documentation for the H3 version INSERT LINK HERE**
 
@@ -75,3 +75,6 @@ Biosciences, Uppsala University <http://www.farmbio.uu.se>`__
 
 Many ideas and inspiration for the API is taken from:
 - `John Paul Morrison's invention and works on Flow-Based Programming <jpaulmorrison.com/fbp>`__
+
+.. _sciluigi repo: https://github.com/pharmbio/sciluigi
+.. |sciluigirepo| replace:: **SciLuigi repo**
