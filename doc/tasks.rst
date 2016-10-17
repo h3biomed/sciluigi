@@ -72,7 +72,7 @@ Example
     class MyTask(Task):
 
         my_param = luigi.Parameter()
-        
+
         def initialize_inputs_and_outputs(self):
             self.in_fq_files = TaskInput()
             self.in_gtf_file = TaskInput()
