@@ -77,4 +77,4 @@ Many ideas and inspiration for the API is taken from:
 - `John Paul Morrison's invention and works on Flow-Based Programming <jpaulmorrison.com/fbp>`__
 
 .. _sciluigi repo: https://github.com/pharmbio/sciluigi
-.. |sciluigirepo| replace:: **SciLuigi repo**
+.. |sciluigi repo| replace:: **SciLuigi repo**
