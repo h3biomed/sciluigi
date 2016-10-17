@@ -6,8 +6,7 @@ Samuel Lampa.  Our repo contains significant changes that have not yet been merg
 never be merged.  You can find full documentation for the H3 version INSERT LINK HERE**
 
 Scientific Luigi (SciLuigi for short) is a light-weight wrapper library
-around `Spotify <http://spotify.com>`__'s
-`Luigi <http://github.com/spotify/luigi>`__ workflow system that aims to
+around `Spotify <http://spotify.com>`__'s `Luigi <http://github.com/spotify/luigi>`__ workflow system that aims to
 make writing scientific workflows (consisting of numerous interdependent
 commandline applications) more fluent, flexible and modular.
 
@@ -33,8 +32,7 @@ following "features" over vanilla Luigi:
 
 - The fact that inputs and outputs are object fields, also allows
   auto-completion support to ease the network connection work (Works
-  great e.g. with
-   `jedi-vim <https://github.com/davidhalter/jedi-vim>`__).
+  great e.g. with `jedi-vim <https://github.com/davidhalter/jedi-vim>`__).
 
 Because of Luigi's great easy-to-use API, these changes have been
 implemented as a very thin layer on top of luigi's own API, and no
@@ -68,8 +66,7 @@ Acknowledgements
 
 This work is funded by:
 
-- `Faculty grants of the dept. of Pharmaceutical
-Biosciences, Uppsala University <http://www.farmbio.uu.se>`__
+- `Faculty grants of the dept. of Pharmaceutical Biosciences, Uppsala University <http://www.farmbio.uu.se>`__
 
 - `Bioinformatics Infrastructure for Life Sciences, BILS <https://bils.se>`__
 
