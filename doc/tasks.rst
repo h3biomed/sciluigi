@@ -65,7 +65,7 @@ allow you to access the task inputs and outputs.  Instead, since you defined the
 Often you will access the :attr:`~sciluigi.dependencies.TaskInput.path` attribute of an input so that you can
 manipulate it.  However, it is possible for more than one file to be connected to a :class:`~sciluigi.dependencies.TaskInput`.
 If this is the case, you can get a list of the paths of all connected files through the
-:attr:`~sciluigi.dependencies.TaskInput.paths`` attribute.  The :attr:`~sciluigi.dependencies.TaskInput.path` attribute
+:attr:`~sciluigi.dependencies.TaskInput.paths` attribute.  The :attr:`~sciluigi.dependencies.TaskInput.path` attribute
 will throw an exception if more than one file has been connected to the input.
 
 Example
