@@ -95,7 +95,7 @@ multiple times, as in the following example:
 Finally, the :meth:`~sciluigi.workflow.WorkflowTask.workflow` method needs to return all tasks that server as endpoints
 for your workflow.  An endpoint means a task that does not pass on any output to a downstream task.
 
-Putting it all together, a workflow should look something liek this:
+Putting it all together, a workflow should look something like this:
 
 .. code-block:: python
 
