@@ -29,7 +29,7 @@ the parent workflow to treat the sub-workflow as an individual task.
 .. figure:: FullSubWorkflow.png
 
 Declaring a Sub-Workflow
----------------------
+-------------------------
 
 The first step is to declare your sub-workflow class.  A sub-workflow should inherit from the
 :class:`~sciluigi.subworkflow.SubWorkflowTask` class.  Like a regular :doc:`SciLuigi task <tasks>`, a workflow can
