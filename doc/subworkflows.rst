@@ -78,6 +78,7 @@ actually be outputs of one or more tasks within the sub-workflow (see the exampl
 example below.
 
 .. code-block:: python
+
     from sciluigi import TaskInput
     from sciluigi import SubWorkflowOutput
 
