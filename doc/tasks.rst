@@ -14,6 +14,8 @@ above might depend on one or more DownloadFastQ tasks in the Luigi framework.  H
 STAR task would depend on one or more FASTQ inputs.  In other words, the SciLuigi version of the STAR task doesn't care
 what specific task provides input.  All it needs are FASTQ files it can feed into the STAR tool.
 
+.. _task_inputs_outputs:
+
 Working with Task Inputs and Outputs
 -------------------------------------
 

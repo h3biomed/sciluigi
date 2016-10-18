@@ -9,6 +9,7 @@ from sciluigi import audit
 from sciluigi.audit import AuditTrailHelpers
 
 from sciluigi import dependencies
+from sciluigi.dependencies import SubWorkflowOutput
 from sciluigi.dependencies import TaskInput
 from sciluigi.dependencies import TargetInfo
 from sciluigi.dependencies import S3TargetInfo
