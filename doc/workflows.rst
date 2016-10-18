@@ -68,6 +68,8 @@ The arguments to the :meth:`~sciluigi.workflow.WorkflowTask.new_task` method con
 - **The task parameters, if necessary.**  If your task has any parameters declared with ``luigi.Parameter()``, the
   value of those parameters would be passed in as named arguments here.
 
+.. _connect_tasks:
+
 Next, you'll need to connect the tasks inputs and outputs together, as in the following example:
 
 .. code-block:: python
