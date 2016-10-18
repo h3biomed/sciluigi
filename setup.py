@@ -18,12 +18,12 @@ with open('README.rst') as fobj:
 
 setup(
     name='h3sciluigi',
-    version='0.0.2',
+    version='1.0.0',
     description='Helper library for writing dynamic, flexible workflows in luigi',
     long_description=long_description,
-    author='Samuel Lampa',
+    author='Samuel Lampa and Michael Soltow',
     author_email='samuel.lampa@farmbio.uu.se',
-    url='https://github.com/samuell/sciluigi',
+    url='https://github.com/h3biomed/sciluigi',
     license='MIT',
     keywords='workflows workflow pipeline luigi',
     packages=[
@@ -39,7 +39,6 @@ setup(
         ]
     },
     classifiers=[
-        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',

@@ -119,7 +119,7 @@ and outputs to the inputs and ouputs of other tasks within your workflow.  The f
 use of a sub-workflow, including the sub-workflow declaration itself as well as the use within a larger workflow.  The
 naming follows the naming used in the diagrams presented in the :ref:`overview <sub_workflow_overview>`
 
-Task Code:
+**Task Code:**
 
 .. code-block:: python
 
@@ -167,7 +167,7 @@ Task Code:
                 for line in f:
                     print line
 
-Sub-Workflow Code:
+**Sub-Workflow Code:**
 
 .. code-block:: python
 
@@ -193,7 +193,7 @@ Sub-Workflow Code:
 
             self.out_subworkflow_output.connect(self.task_c.out_task_c_output)
 
-Workflow Code:
+**Workflow Code:**
 
 .. code-block:: python
 
