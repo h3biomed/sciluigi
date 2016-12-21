@@ -14,6 +14,7 @@ import sciluigi.slurm
 
 log = logging.getLogger('sciluigi-interface')
 
+
 # ==============================================================================
 
 class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
@@ -24,11 +25,13 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
 
     instance_name = luigi.Parameter(default='sciluigi_workflow')
 
-    _tasks = {}
-    _wfstart = ''
-    _wflogpath = ''
-    _hasloggedstart = False
-    _hasloggedfinish = False
+    def __init__(self, *args, **kwargs):
+        super(WorkflowTask, self).__init__(*args, **kwargs)
+        self._tasks = {}
+        self._wfstart = ''
+        self._wflogpath = ''
+        self._hasloggedstart = False
+        self._hasloggedfinish = False
 
     def _ensure_timestamp(self):
         '''
