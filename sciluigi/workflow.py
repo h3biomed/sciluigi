@@ -122,9 +122,15 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         Create new task instance, and link it to the current workflow.
         '''
+        if 'sciluigi_reduce_function' not in kwargs:
+            kwargs['sciluigi_reduce_args'] = (instance_name, cls, kwargs)
+            kwargs['sciluigi_reduce_function']  = self._new_task_unpickle
         newtask = sciluigi.new_task(instance_name, cls, self, **kwargs)
         self._tasks[instance_name] = newtask
         return newtask
+
+    def _new_task_unpickle(self, instance_name, cls, kwargs):
+        return self.new_task(instance_name, cls, **kwargs)
 
 # ================================================================================
 
