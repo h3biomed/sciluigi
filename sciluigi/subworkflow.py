@@ -18,13 +18,13 @@ class SubWorkflowTask(sciluigi.task.Task):
 
     def new_task(self, instance_name, cls, **kwargs):
         instance_name = '%s_%s' % (self.instance_name, instance_name)
-        # if 'sciluigi_reduce_function' not in kwargs:
-        #     kwargs['sciluigi_reduce_args'] = (instance_name, cls, kwargs)
-        #     kwargs['sciluigi_reduce_function']  = self._new_task_unpickle
+        if 'sciluigi_reduce_function' not in kwargs:
+            kwargs['sciluigi_reduce_args'] = (instance_name, cls, kwargs)
+            kwargs['sciluigi_reduce_function']  = self._new_task_unpickle
         return self.workflow_task.new_task(instance_name, cls, **kwargs)
 
-    # def _new_task_unpickle(self, instance_name, cls, kwargs):
-    #     return self.new_task(instance_name, cls, **kwargs)
+    def _new_task_unpickle(self, instance_name, cls, kwargs):
+        return self.new_task(instance_name, cls, **kwargs)
 
     def connect_tasks(self):
         raise NotImplementedError
