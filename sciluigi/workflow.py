@@ -26,12 +26,25 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
     instance_name = luigi.Parameter(default='sciluigi_workflow')
 
     def __init__(self, *args, **kwargs):
+        # When unpickling, kwargs will be smashed in with args
+        # Re-call __init__ with args in the proper format in this case
+        if len(args) and isinstance(args[-1], dict):
+            new_args = args[:-1]
+            new_kwargs = args[-1]
+            return self.__init__(*new_args, **new_kwargs)
+
         super(WorkflowTask, self).__init__(*args, **kwargs)
         self._tasks = {}
         self._wfstart = ''
         self._wflogpath = ''
         self._hasloggedstart = False
         self._hasloggedfinish = False
+        self._sciluigi_init_args = args
+        self._sciluigi_init_kwargs = kwargs
+
+    def __getinitargs__(self):
+        args_list = self._sciluigi_init_args + [self._sciluigi_init_kwargs]
+        return tuple(args_list)
 
     def _ensure_timestamp(self):
         '''
