@@ -36,7 +36,7 @@ def _new_task_unpickle(instance, instance_name, cls, kwargs):
     if hasattr(instance, 'workflow_task'):
         instance.workflow_task.__init__(**instance.sciluigi_workflow_kwargs)
     else:
-        instance.__init__(**instance.sciluigi_workflow_kwargs)
+        instance.__init__()
     return instance.new_task(instance_name, cls, **kwargs)
 
 
