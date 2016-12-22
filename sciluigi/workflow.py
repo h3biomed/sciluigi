@@ -124,7 +124,7 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         if 'sciluigi_reduce_function' not in kwargs:
             kwargs['sciluigi_reduce_args'] = (self, instance_name, cls, kwargs)
-            kwargs['sciluigi_reduce_function'] = sciluigi.Task._new_task_unpickle
+            kwargs['sciluigi_reduce_function'] = sciluigi.task._new_task_unpickle
         newtask = sciluigi.new_task(instance_name, cls, self, **kwargs)
         self._tasks[instance_name] = newtask
         return newtask
