@@ -24,7 +24,6 @@ def new_task(name, cls, workflow_task, **kwargs):
     slurminfo = None
     kwargs['instance_name'] = name
     kwargs['workflow_task'] = workflow_task
-    kwargs['sciluigi_workflow_kwargs'] = workflow_task.param_kwargs
     newtask = cls(**kwargs)
     if slurminfo is not None:
         newtask.slurminfo = slurminfo
@@ -33,9 +32,7 @@ def new_task(name, cls, workflow_task, **kwargs):
 
 def _new_task_unpickle(instance, instance_name, cls, kwargs):
     # Make sure the workflow has been instantiated before any other unpickling is done
-    if hasattr(instance, 'workflow_task'):
-        instance.workflow_task.__init__(**instance.sciluigi_workflow_kwargs)
-    else:
+    if isinstance(instance, sciluigi.WorkflowTask):
         instance.__init__()
     return instance.new_task(instance_name, cls, **kwargs)
 
