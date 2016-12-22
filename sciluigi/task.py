@@ -46,7 +46,6 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     instance_name = luigi.Parameter(significant=False)
     sciluigi_reduce_function = luigi.Parameter(significant=False)
     sciluigi_reduce_args = luigi.Parameter(significant=False)
-    sciluigi_workflow_kwargs = luigi.Parameter(significant=False)
 
     def __reduce__(self):
         return self.sciluigi_reduce_function, self.sciluigi_reduce_args
