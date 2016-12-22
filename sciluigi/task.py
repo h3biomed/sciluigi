@@ -20,6 +20,7 @@ def new_task(name, cls, workflow_task, **kwargs):
     Instantiate a new task. Not supposed to be used by the end-user
     (use WorkflowTask.new_task() instead).
     '''
+    print 'Constructing {} with name {}'.format(cls.__name__, name)
     slurminfo = None
     kwargs['instance_name'] = name
     kwargs['workflow_task'] = workflow_task
