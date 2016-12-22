@@ -29,6 +29,10 @@ def new_task(name, cls, workflow_task, **kwargs):
     return newtask
 
 
+def _new_task_unpickle(instance, instance_name, cls, kwargs):
+    return instance.new_task(instance_name, cls, **kwargs)
+
+
 class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHelpers, luigi.Task):
     '''
     SciLuigi Task, implementing SciLuigi specific functionality for dependency resolution
@@ -40,10 +44,7 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     sciluigi_reduce_args = luigi.Parameter(significant=False)
 
     def __reduce__(self):
-        return_val = self.sciluigi_reduce_function, self.sciluigi_reduce_args
-        self.sciluigi_reduce_function = None
-        self.sciluigi_reduce_args = None
-        return return_val
+        return self.sciluigi_reduce_function, self.sciluigi_reduce_args
 
     def __init__(self, *args, **kwargs):
         super(Task, self).__init__(*args, **kwargs)
