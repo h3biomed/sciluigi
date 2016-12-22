@@ -40,7 +40,10 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     sciluigi_reduce_args = luigi.Parameter(significant=False)
 
     def __reduce__(self):
-        return self.sciluigi_reduce_function, self.sciluigi_reduce_args, {'workflow_task': self.workflow_task}
+        return_val = self.sciluigi_reduce_function, self.sciluigi_reduce_args
+        self.sciluigi_reduce_function = None
+        self.sciluigi_reduce_args = None
+        return return_val
 
     def __init__(self, *args, **kwargs):
         super(Task, self).__init__(*args, **kwargs)
