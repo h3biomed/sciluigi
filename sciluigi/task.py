@@ -24,6 +24,7 @@ def new_task(name, cls, workflow_task, **kwargs):
     slurminfo = None
     kwargs['instance_name'] = name
     kwargs['workflow_task'] = workflow_task
+    kwargs['sciluigi_workflow_kwargs'] = workflow_task.param_kwargs
     newtask = cls(**kwargs)
     if slurminfo is not None:
         newtask.slurminfo = slurminfo
@@ -31,6 +32,11 @@ def new_task(name, cls, workflow_task, **kwargs):
 
 
 def _new_task_unpickle(instance, instance_name, cls, kwargs):
+    # Make sure the workflow has been instantiated before any other unpickling is done
+    if hasattr(instance, 'workflow_task'):
+        instance.workflow_task.__init__(**instance.sciluigi_workflow_kwargs)
+    else:
+        instance.__init__(**instance.sciluigi_workflow_kwargs)
     return instance.new_task(instance_name, cls, **kwargs)
 
 
@@ -43,6 +49,7 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     instance_name = luigi.Parameter(significant=False)
     sciluigi_reduce_function = luigi.Parameter(significant=False)
     sciluigi_reduce_args = luigi.Parameter(significant=False)
+    sciluigi_workflow_kwargs = luigi.Parameter(significant=False)
 
     def __reduce__(self):
         return self.sciluigi_reduce_function, self.sciluigi_reduce_args
