@@ -32,6 +32,8 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         self._wflogpath = ''
         self._hasloggedstart = False
         self._hasloggedfinish = False
+        self._sciluigi_args = args
+        self._sciluigi_kwargs = kwargs
 
     def _ensure_timestamp(self):
         '''

@@ -33,7 +33,7 @@ def new_task(name, cls, workflow_task, **kwargs):
 def _new_task_unpickle(instance, instance_name, cls, kwargs):
     # Make sure the workflow has been instantiated before any other unpickling is done
     if isinstance(instance, sciluigi.WorkflowTask):
-        instance.__init__()
+        instance.__init__(*instance._sciluigi_args, **instance._sciluigi_kwargs)
     return instance.new_task(instance_name, cls, **kwargs)
 
 
