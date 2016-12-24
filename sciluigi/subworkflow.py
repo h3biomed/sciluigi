@@ -19,7 +19,8 @@ class SubWorkflowTask(sciluigi.task.Task):
     def new_task(self, instance_name, cls, **kwargs):
         instance_name = '%s_%s' % (self.instance_name, instance_name)
         if 'sciluigi_reduce_function' not in kwargs:
-            kwargs['sciluigi_reduce_args'] = (self, instance_name, cls, kwargs)
+            kwargs['sciluigi_reduce_args'] = (self, instance_name, cls, kwargs, self.workflow_task._sciluigi_args,
+                                              self.workflow_task._sciluigi_kwargs)
             kwargs['sciluigi_reduce_function'] = sciluigi.task._new_task_unpickle
         return self.workflow_task.new_task(instance_name, cls, **kwargs)
 
