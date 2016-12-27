@@ -20,7 +20,6 @@ def new_task(name, cls, workflow_task, **kwargs):
     Instantiate a new task. Not supposed to be used by the end-user
     (use WorkflowTask.new_task() instead).
     '''
-    log.info('Constructing ' + cls.__name__ + ' named ' + name)
     slurminfo = None
     kwargs['instance_name'] = name
     kwargs['workflow_task'] = workflow_task
@@ -31,9 +30,11 @@ def new_task(name, cls, workflow_task, **kwargs):
 
 
 def _new_task_unpickle(instance, instance_name, cls, kwargs, wf_dict):
-    # Make sure the workflow has been instantiated before any other unpickling is done
+    # Make sure the workflow has been initialized before any other unpickling is done
     if isinstance(instance, sciluigi.WorkflowTask):
         instance.__dict__.update(wf_dict)
+    else:
+        instance.workflow_task.__dict__.update(wf_dict)
     return instance.new_task(instance_name, cls, **kwargs)
 
 
