@@ -34,6 +34,9 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         self._hasloggedstart = False
         self._hasloggedfinish = False
 
+    def __deepcopy__(self, memo):
+        return self
+
     def _ensure_timestamp(self):
         '''
         Make sure that there is a time stamp for when the workflow started.

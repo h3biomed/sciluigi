@@ -57,7 +57,7 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     sciluigi_reduce_args = luigi.Parameter(significant=False)
 
     def __deepcopy__(self, memo):
-        return copy._reconstruct(self, super(Task, self).__reduce__(), 1, memo)
+        return self
 
     def __reduce__(self):
         return self.sciluigi_reduce_function, self.sciluigi_reduce_args
