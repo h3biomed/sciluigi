@@ -128,8 +128,8 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         if 'sciluigi_reduce_function' not in kwargs:
             wf_dict = copy.deepcopy(self.__dict__)
-            # if '_tasks' in wf_dict:
-            #     del wf_dict['_tasks']
+            if '_tasks' in wf_dict:
+                del wf_dict['_tasks']
             kwargs['sciluigi_reduce_args'] = (self, instance_name, cls, copy.deepcopy(kwargs), wf_dict)
             kwargs['sciluigi_reduce_function'] = sciluigi.task._new_task_unpickle
         newtask = sciluigi.new_task(instance_name, cls, self, **kwargs)
