@@ -24,7 +24,6 @@ def new_task(name, cls, workflow_task, **kwargs):
     slurminfo = None
     kwargs['instance_name'] = name
     kwargs['workflow_task'] = workflow_task
-    print name + ' - ' + cls.__name__
     newtask = cls(**kwargs)
     if slurminfo is not None:
         newtask.slurminfo = slurminfo
