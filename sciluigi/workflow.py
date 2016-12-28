@@ -35,7 +35,7 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
 
     def __repr__(self):
         try:
-            super(WorkflowTask, self).__repr__()
+            return super(WorkflowTask, self).__repr__()
         except AttributeError:
             return self.__class__.__name__
 
