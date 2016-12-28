@@ -12,6 +12,7 @@ import sciluigi.audit
 import sciluigi.interface
 import sciluigi.dependencies
 import sciluigi.slurm
+import traceback
 
 log = logging.getLogger('sciluigi-interface')
 
@@ -86,6 +87,7 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
             log.info('SciLuigi: %s Workflow Started', clsname)
             log.info('-'*80)
             self._hasloggedstart = True
+        traceback.print_stack()
         workflow_output = self.workflow()
         if workflow_output is None:
             clsname = self.__class__.__name__
