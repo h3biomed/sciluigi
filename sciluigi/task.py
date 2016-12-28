@@ -29,16 +29,14 @@ def new_task(name, cls, workflow_task, **kwargs):
     return newtask
 
 
-def _new_task_unpickle(instance, instance_name, cls, kwargs, wf_dict):
+def _new_task_unpickle(instance, instance_name, cls, kwargs):
     # Make sure the workflow has been initialized before any other unpickling is done
     if isinstance(instance, sciluigi.WorkflowTask):
         if not hasattr(instance, '_tasks'):
             instance._tasks = {}
-        instance.__dict__.update(wf_dict)
     else:
         if not hasattr(instance.workflow_task, '_tasks'):
             instance.workflow_task._tasks = {}
-        instance.workflow_task.__dict__
     return instance.new_task(instance_name, cls, **kwargs)
 
 
