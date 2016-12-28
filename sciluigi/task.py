@@ -2,6 +2,7 @@
 This module contains sciluigi's subclasses of luigi's Task class.
 '''
 
+import copy
 import luigi
 import logging
 import subprocess as sub
@@ -54,6 +55,9 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     instance_name = luigi.Parameter(significant=False)
     sciluigi_reduce_function = luigi.Parameter(significant=False)
     sciluigi_reduce_args = luigi.Parameter(significant=False)
+
+    def __deepcopy__(self, memo):
+        return copy._reconstruct(self, super(Task, self).__reduce__(), 1, memo)
 
     def __reduce__(self):
         return self.sciluigi_reduce_function, self.sciluigi_reduce_args
