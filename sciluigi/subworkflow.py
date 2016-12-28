@@ -1,3 +1,4 @@
+import copy
 import logging
 import sciluigi
 
@@ -19,7 +20,7 @@ class SubWorkflowTask(sciluigi.task.Task):
     def new_task(self, instance_name, cls, **kwargs):
         instance_name = '%s_%s' % (self.instance_name, instance_name)
         if 'sciluigi_reduce_function' not in kwargs:
-            kwargs['sciluigi_reduce_args'] = (self, instance_name, cls, kwargs,
+            kwargs['sciluigi_reduce_args'] = (self, instance_name, cls, copy.deepcopy(kwargs),
                                               {k: v for k, v in self.__dict__.iteritems() if k != '_tasks'})
             kwargs['sciluigi_reduce_function'] = sciluigi.task._new_task_unpickle
         return self.workflow_task.new_task(instance_name, cls, **kwargs)

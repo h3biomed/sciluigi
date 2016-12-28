@@ -2,6 +2,7 @@
 This module contains sciluigi's subclasses of luigi's Task class.
 '''
 
+import copy
 import datetime
 import luigi
 import logging
@@ -123,7 +124,7 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         Create new task instance, and link it to the current workflow.
         '''
         if 'sciluigi_reduce_function' not in kwargs:
-            kwargs['sciluigi_reduce_args'] = (self, instance_name, cls, kwargs,
+            kwargs['sciluigi_reduce_args'] = (self, instance_name, cls, copy.deepcopy(kwargs),
                                               {k: v for k, v in self.__dict__.iteritems() if k != '_tasks'})
             kwargs['sciluigi_reduce_function'] = sciluigi.task._new_task_unpickle
         newtask = sciluigi.new_task(instance_name, cls, self, **kwargs)
