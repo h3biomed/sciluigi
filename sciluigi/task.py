@@ -31,14 +31,14 @@ def new_task(name, cls, workflow_task, **kwargs):
 
 def _new_task_unpickle(instance, instance_name, cls, kwargs, wf_dict):
     # Make sure the workflow has been initialized before any other unpickling is done
-    log.info('Instance name = ' + instance_name)
-    log.info(wf_dict)
+    print 'Instance name = ' + instance_name
+    print wf_dict
     if isinstance(instance, sciluigi.WorkflowTask):
         instance.__dict__.update(wf_dict)
-        log.info(instance.__dict__)
+        print instance.__dict__
     else:
         instance.workflow_task.__dict__.update(wf_dict)
-        log.info(instance.workflow_task.__dict__)
+        instance.workflow_task.__dict__
     return instance.new_task(instance_name, cls, **kwargs)
 
 
