@@ -33,12 +33,6 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         self._hasloggedstart = False
         self._hasloggedfinish = False
 
-    def __repr__(self):
-        try:
-            return super(WorkflowTask, self).__repr__()
-        except AttributeError:
-            return self.__class__.__name__
-
     def _ensure_timestamp(self):
         '''
         Make sure that there is a time stamp for when the workflow started.
@@ -129,7 +123,8 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         Create new task instance, and link it to the current workflow.
         '''
         if 'sciluigi_reduce_function' not in kwargs:
-            kwargs['sciluigi_reduce_args'] = (self, instance_name, cls, kwargs)
+            kwargs['sciluigi_reduce_args'] = (self, instance_name, cls, kwargs,
+                                              {k: v for k, v in self.__dict__.iteritems() if k != '_tasks'})
             kwargs['sciluigi_reduce_function'] = sciluigi.task._new_task_unpickle
         newtask = sciluigi.new_task(instance_name, cls, self, **kwargs)
         self._tasks[instance_name] = newtask
