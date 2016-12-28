@@ -25,8 +25,6 @@ def new_task(name, cls, workflow_task, **kwargs):
     kwargs['instance_name'] = name
     kwargs['workflow_task'] = workflow_task
     print name + ' - ' + cls.__name__
-    if 'sciluigi_reduce_function' in kwargs:
-        print kwargs
     newtask = cls(**kwargs)
     if slurminfo is not None:
         newtask.slurminfo = slurminfo
