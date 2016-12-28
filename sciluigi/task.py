@@ -39,22 +39,21 @@ def _new_task_unpickle(instance, instance_name, cls, kwargs, wf_dict):
         if not hasattr(instance.workflow_task, '_tasks'):
             instance.workflow_task._tasks = {}
         instance.workflow_task.__dict__.update(wf_dict)
+    kwargs['sciluigi_unpickling'] = True
     return instance.new_task(instance_name, cls, **kwargs)
 
 
 class MetaTask(luigi.task_register.Register):
     def __call__(cls, *args, **kwargs):
         # Allows us to pass in properties that aren't Luigi params
-        sciluigi_reduce_args = None
-        sciluigi_reduce_function = None
-        if 'sciluigi_reduce_function' in kwargs:
-            sciluigi_reduce_function = kwargs.pop('sciluigi_reduce_function')
-        if 'sciluigi_reduce_args' in kwargs:
-            sciluigi_reduce_args = kwargs.pop('sciluigi_reduce_args')
+        sciluigi_reduce_function = kwargs.pop('sciluigi_reduce_function', None)
+        sciluigi_reduce_args = kwargs.pop('sciluigi_reduce_args', None)
+        sciluigi_unpickling = kwargs.pop('sciluigi_unpickling', False)
 
         new_instance = super(MetaTask, cls).__call__(*args, **kwargs)
         new_instance.sciluigi_reduce_args = sciluigi_reduce_args
         new_instance.sciluigi_reduce_function = sciluigi_reduce_function
+        new_instance.sciluigi_unpickling = sciluigi_unpickling
         return new_instance
 
 
@@ -76,7 +75,8 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
 
     def __init__(self, *args, **kwargs):
         super(Task, self).__init__(*args, **kwargs)
-        self.initialize_inputs_and_outputs()
+        if not self.sciluigi_unpickling:
+            self.initialize_inputs_and_outputs()
 
     def initialize_inputs_and_outputs(self):
         raise NotImplementedError
