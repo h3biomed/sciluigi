@@ -15,13 +15,14 @@ log = logging.getLogger('sciluigi-interface')
 # ==============================================================================
 
 
-def new_task(name, cls, **kwargs):
+def new_task(name, cls, workflow_task, **kwargs):
     '''
     Instantiate a new task. Not supposed to be used by the end-user
     (use WorkflowTask.new_task() instead).
     '''
     slurminfo = None
     kwargs['instance_name'] = name
+    kwargs['workflow_task'] = workflow_task
     newtask = cls(**kwargs)
     if slurminfo is not None:
         newtask.slurminfo = slurminfo
@@ -45,11 +46,7 @@ def _new_task_unpickle(instance, instance_name, cls, kwargs, wf_dict):
 class MetaTask(luigi.task_register.Register):
     def __call__(cls, *args, **kwargs):
         # Allows us to pass in properties that aren't Luigi params
-        # workflow_task = kwargs.pop('workflow_task', None)
-        #
         new_instance = super(MetaTask, cls).__call__(*args, **kwargs)
-        # new_instance.workflow_task = workflow_task
-        new_instance.__configure__()
         return new_instance
 
 
@@ -60,14 +57,14 @@ class Task(sciluigi.dependencies.DependencyHelpers, luigi.Task):
     '''
     __metaclass__ = MetaTask
 
+    workflow_task = luigi.Parameter(significant=False)
     instance_name = luigi.Parameter(significant=False)
 
-    def __configure__(self):
-        self.initialize_inputs_and_outputs()
 
-    def __setstate__(self, state):
-        print self.__class__
-        print state
+    def __init__(self, *args, **kwargs):
+        super(Task, self).__init__(*args, **kwargs)
+        self.initialize_inputs_and_outputs())
+
 
     def initialize_inputs_and_outputs(self):
         raise NotImplementedError
@@ -126,7 +123,7 @@ class ExternalTask(sciluigi.dependencies.DependencyHelpers, luigi.ExternalTask):
     SviLuigi specific implementation of luigi.ExternalTask, representing existing
     files.
     '''
-    instance_name = luigi.Parameter()
+    workflow_task = luigi.Parameter(    instance_name = luigi.Parameter()()
 
     def __init__(self, *args, **kwargs):
         super(ExternalTask, self).__init__(*args, **kwargs)

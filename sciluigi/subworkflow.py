@@ -7,7 +7,8 @@ log = logging.getLogger('sciluigi-interface')
 
 class SubWorkflowTask(sciluigi.task.Task):
 
-    def __configure__(self):
+    def __init__(self, *args, **kwargs):
+        super(sciluigi.task.Task, self).__init__(*args, **kwargs)
         self.initialize_tasks()
         self.initialize_inputs_and_outputs()
         self.connect_tasks()
