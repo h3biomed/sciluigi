@@ -72,9 +72,17 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     # def __reduce__(self):
     #     return self.sciluigi_reduce_function, self.sciluigi_reduce_args
 
+    def printdict(self, inputdict):
+        for item in inputdict:
+            print item
+            if hasattr(inputdict[item], '__dict__'):
+                self.printdict(inputdict[item].__dict__)
+            else:
+                print inputdict[item]
+
     def __setstate__(self, state):
         print self.__class__
-        print state
+        self.printdict(state)
 
     def __init__(self, *args, **kwargs):
         super(Task, self).__init__(*args, **kwargs)
