@@ -66,6 +66,10 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     def __configure__(self):
         self.initialize_inputs_and_outputs()
 
+    def __setstate__(self, state):
+        print self.__class__
+        print state
+
     def initialize_inputs_and_outputs(self):
         raise NotImplementedError
 
