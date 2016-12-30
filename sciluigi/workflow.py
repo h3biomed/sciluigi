@@ -16,7 +16,7 @@ log = logging.getLogger('sciluigi-interface')
 
 # ==============================================================================
 
-class WorkflowTask(luigi.Task):
+class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
     '''
     SciLuigi-specific task, that has a method for implementing a (dynamic) workflow
     definition (workflow()).

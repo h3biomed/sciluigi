@@ -50,7 +50,7 @@ class MetaTask(luigi.task_register.Register):
         return new_instance
 
 
-class Task(sciluigi.dependencies.DependencyHelpers, luigi.Task):
+class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHelpers, luigi.Task):
     '''
     SciLuigi Task, implementing SciLuigi specific functionality for dependency resolution
     and audit trail logging.
@@ -63,7 +63,7 @@ class Task(sciluigi.dependencies.DependencyHelpers, luigi.Task):
 
     def __init__(self, *args, **kwargs):
         super(Task, self).__init__(*args, **kwargs)
-        self.initialize_inputs_and_outputs())
+        self.initialize_inputs_and_outputs()
 
 
     def initialize_inputs_and_outputs(self):
@@ -118,12 +118,13 @@ def touch_unfulfilled_optional(task):
 
 # ==============================================================================
 
-class ExternalTask(sciluigi.dependencies.DependencyHelpers, luigi.ExternalTask):
+class ExternalTask(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHelpers, luigi.ExternalTask):
     '''
     SviLuigi specific implementation of luigi.ExternalTask, representing existing
     files.
     '''
-    workflow_task = luigi.Parameter(    instance_name = luigi.Parameter()()
+    workflow_task = luigi.Parameter(significant=False)
+    instance_name = luigi.Parameter(significant=False)
 
     def __init__(self, *args, **kwargs):
         super(ExternalTask, self).__init__(*args, **kwargs)
