@@ -69,13 +69,12 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     def __deepcopy__(self, memo):
         return self
 
-    def __reduce__(self):
-        return self.sciluigi_reduce_function, self.sciluigi_reduce_args
+    # def __reduce__(self):
+    #     return self.sciluigi_reduce_function, self.sciluigi_reduce_args
 
     def __init__(self, *args, **kwargs):
         super(Task, self).__init__(*args, **kwargs)
-        if not self.sciluigi_unpickling:
-            self.initialize_inputs_and_outputs()
+        self.initialize_inputs_and_outputs()
 
     def initialize_inputs_and_outputs(self):
         raise NotImplementedError

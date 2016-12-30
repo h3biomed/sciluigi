@@ -9,11 +9,10 @@ class SubWorkflowTask(sciluigi.task.Task):
 
     def __init__(self, *args, **kwargs):
         super(sciluigi.task.Task, self).__init__(*args, **kwargs)
-        if not self.sciluigi_unpickling:
-            self.initialize_tasks()
-            self.initialize_inputs_and_outputs()
-            #self.endpoints = [self.connect_tasks()]
-            self.connect_tasks()
+        self.initialize_tasks()
+        self.initialize_inputs_and_outputs()
+        #self.endpoints = [self.connect_tasks()]
+        self.connect_tasks()
 
     def initialize_tasks(self):
         raise NotImplementedError
