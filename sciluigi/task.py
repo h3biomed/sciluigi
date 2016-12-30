@@ -120,7 +120,7 @@ def touch_unfulfilled_optional(task):
                 task.ex_local('touch ' + output.path)
 
 # ==============================================================================
-l
+
 class ExternalTask(sciluigi.dependencies.DependencyHelpers, luigi.ExternalTask):
     '''
     SviLuigi specific implementation of luigi.ExternalTask, representing existing
