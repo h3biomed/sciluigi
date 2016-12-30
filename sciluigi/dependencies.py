@@ -43,12 +43,12 @@ class TaskInput(object):
 
     @property
     def paths(self):
-        return set([t.path for t in self.target_infos])
+        return list(set([t.path for t in self.target_infos]))
 
     @property
     def path(self):
         if len(self.paths) == 1:
-            return self.paths.pop()
+            return self.paths[0]
         raise ValueError('This TaskInput must be connected to only one TargetInfo in order to access this property')
 
     def __init__(self):
