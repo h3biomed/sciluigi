@@ -2,6 +2,7 @@
 This module contains sciluigi's subclasses of luigi's Task class.
 '''
 
+import copy
 import datetime
 import luigi
 import logging
@@ -41,6 +42,17 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         if self._wfstart == '':
             self._wfstart = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S_%f')
+
+    def get_auditdirpath(self):
+        '''
+        Get the path to the workflow-speicfic audit trail directory.
+        '''
+
+        self._ensure_timestamp()
+        clsname = self.__class__.__name__.lower()
+        audit_dirpath = 'sciluigi-audit/audit_%s_%s' % (clsname, self._wfstart)
+
+        return audit_dirpath
 
     def get_auditlogpath(self):
         '''
@@ -115,6 +127,12 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         Create new task instance, and link it to the current workflow.
         '''
+        if 'sciluigi_reduce_function' not in kwargs:
+            wf_dict = copy.deepcopy(self.__dict__)
+            if '_tasks' in wf_dict:
+                del wf_dict['_tasks']
+            kwargs['sciluigi_reduce_args'] = (self, instance_name, cls, copy.deepcopy(kwargs), wf_dict)
+            kwargs['sciluigi_reduce_function'] = sciluigi.task._new_task_unpickle
         newtask = sciluigi.new_task(instance_name, cls, self, **kwargs)
         self._tasks[instance_name] = newtask
         return newtask
