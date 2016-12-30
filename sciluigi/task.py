@@ -29,17 +29,54 @@ def new_task(name, cls, workflow_task, **kwargs):
     return newtask
 
 
+def _new_task_unpickle(instance, instance_name, cls, kwargs, wf_dict):
+    # Make sure the workflow has been initialized before any other unpickling is done
+    if isinstance(instance, sciluigi.WorkflowTask):
+        if not hasattr(instance, '_tasks'):
+            instance._tasks = {}
+        instance.__dict__.update(wf_dict)
+    else:
+        if not hasattr(instance.workflow_task, '_tasks'):
+            instance.workflow_task._tasks = {}
+        instance.workflow_task.__dict__.update(wf_dict)
+    kwargs['sciluigi_unpickling'] = True
+    return instance.new_task(instance_name, cls, **kwargs)
+
+
+class MetaTask(luigi.task_register.Register):
+    def __call__(cls, *args, **kwargs):
+        # Allows us to pass in properties that aren't Luigi params
+        sciluigi_reduce_function = kwargs.pop('sciluigi_reduce_function', None)
+        sciluigi_reduce_args = kwargs.pop('sciluigi_reduce_args', None)
+
+        new_instance = super(MetaTask, cls).__call__(*args, **kwargs)
+        new_instance.sciluigi_reduce_args = sciluigi_reduce_args
+        new_instance.sciluigi_reduce_function = sciluigi_reduce_function
+        new_instance.sciluigi_state = new_instance.__dict__
+        return new_instance
+
+
 class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHelpers, luigi.Task):
     '''
     SciLuigi Task, implementing SciLuigi specific functionality for dependency resolution
     and audit trail logging.
     '''
+    __metaclass__ = MetaTask
+
     workflow_task = luigi.Parameter(significant=False)
     instance_name = luigi.Parameter(significant=False)
+    sciluigi_unpickling = luigi.Parameter(default=False, significant=False)
+
+    def __deepcopy__(self, memo):
+        return self
+
+    def __reduce__(self):
+        return self.sciluigi_reduce_function, self.sciluigi_reduce_args, self.sciluigi_state
 
     def __init__(self, *args, **kwargs):
         super(Task, self).__init__(*args, **kwargs)
-        self.initialize_inputs_and_outputs()
+        if not self.sciluigi_unpickling:
+            self.initialize_inputs_and_outputs()
 
     def initialize_inputs_and_outputs(self):
         raise NotImplementedError
@@ -93,16 +130,13 @@ def touch_unfulfilled_optional(task):
 
 # ==============================================================================
 
-class ExternalTask(
-        sciluigi.audit.AuditTrailHelpers,
-        sciluigi.dependencies.DependencyHelpers,
-        luigi.ExternalTask):
+class ExternalTask(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHelpers, luigi.ExternalTask):
     '''
     SviLuigi specific implementation of luigi.ExternalTask, representing existing
     files.
     '''
-    workflow_task = luigi.Parameter()
-    instance_name = luigi.Parameter()
+    workflow_task = luigi.Parameter(significant=False)
+    instance_name = luigi.Parameter(significant=False)
 
     def __init__(self, *args, **kwargs):
         super(ExternalTask, self).__init__(*args, **kwargs)

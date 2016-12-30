@@ -4,17 +4,19 @@ Getting Started
 Installing and Upgrading
 ---------------------------
 
-Currently, the best way to install ``sciluigi`` and all of its dependencies is through the pre-built wheels stored
-on the shared drive.  The command is currently a bit long, but we're hoping to make this process easier in the future
-by abstracting all our packaging logic through a service such as Artifactory.
+If you have already installed the `pipelines repo <http://pipelines-docs.h3b.hope>`_, then SciLuigi will already be
+installed on your machine.  If you do not wish to install pipelines and want to install SciLuigi independenty, you can
+do so via our private `Artifactory <https://www.jfrog.com/artifactory/>`_ instance.  First, you'll need to
+`configure pip <http://pipelines-docs.h3b.hope/user_guide.html#installation>`_ to point to our Artifactory instance.
 
-For now, use the following command to install ``sciluigi``:
+You can then run the following command to install SciLuigi:
 
 .. code-block:: none
 
-    pip install --upgrade --no-index --find-links /h3/g/bi/projects/pipelines/wheels sciluigi
+    pip install h3sciluigi
 
-You can upgrade the code using the same command.
+**Note that you need to install** ``h3sciluigi`` **instead of** ``sciluigi``.  ``sciluigi`` **is the original package,**
+**while** ``h3sciluigi`` **contains our customizations.**
 
 Overview
 ---------
