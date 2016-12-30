@@ -115,7 +115,7 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         Create new task instance, and link it to the current workflow.
         '''
-        newtask = sciluigi.new_task(instance_name, cls, **kwargs)
+        newtask = sciluigi.new_task(instance_name, cls, self, **kwargs)
         self._tasks[instance_name] = newtask
         return newtask
 
