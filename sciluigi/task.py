@@ -72,6 +72,10 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     # def __reduce__(self):
     #     return self.sciluigi_reduce_function, self.sciluigi_reduce_args
 
+    def __setstate__(self, state):
+        print self.__class__
+        print state
+
     def __init__(self, *args, **kwargs):
         super(Task, self).__init__(*args, **kwargs)
         self.initialize_inputs_and_outputs()
