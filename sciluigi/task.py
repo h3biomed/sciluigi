@@ -60,7 +60,6 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     '''
     __metaclass__ = MetaTask
 
-    workflow_task = luigi.Parameter(significant=False)
     instance_name = luigi.Parameter(significant=False)
 
     def __init__(self, *args, **kwargs):
