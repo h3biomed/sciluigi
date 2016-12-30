@@ -48,12 +48,11 @@ class MetaTask(luigi.task_register.Register):
         # Allows us to pass in properties that aren't Luigi params
         sciluigi_reduce_function = kwargs.pop('sciluigi_reduce_function', None)
         sciluigi_reduce_args = kwargs.pop('sciluigi_reduce_args', None)
-        sciluigi_state = kwargs.pop('sciluigi_state', {})
 
         new_instance = super(MetaTask, cls).__call__(*args, **kwargs)
         new_instance.sciluigi_reduce_args = sciluigi_reduce_args
         new_instance.sciluigi_reduce_function = sciluigi_reduce_function
-        new_instance.sciluigi_State = sciluigi_state
+        new_instance.sciluigi_state = new_instance.__dict__
         return new_instance
 
 
