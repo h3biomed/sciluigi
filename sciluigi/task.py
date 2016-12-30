@@ -50,6 +50,7 @@ class MetaTask(luigi.task_register.Register):
 
         new_instance = super(MetaTask, cls).__call__(*args, **kwargs)
         new_instance.workflow_task = workflow_task
+        new_instance.__configure__()
         return new_instance
 
 
@@ -62,8 +63,7 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
 
     instance_name = luigi.Parameter(significant=False)
 
-    def __init__(self, *args, **kwargs):
-        super(Task, self).__init__(*args, **kwargs)
+    def __configure__(self):
         self.initialize_inputs_and_outputs()
 
     def initialize_inputs_and_outputs(self):
