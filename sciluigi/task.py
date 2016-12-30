@@ -46,12 +46,10 @@ def _new_task_unpickle(instance, instance_name, cls, kwargs, wf_dict):
 class MetaTask(luigi.task_register.Register):
     def __call__(cls, *args, **kwargs):
         # Allows us to pass in properties that aren't Luigi params
-        sciluigi_reduce_function = kwargs.pop('sciluigi_reduce_function', None)
-        sciluigi_reduce_args = kwargs.pop('sciluigi_reduce_args', None)
+        workflow_task = kwargs.pop('workflow_task', None)
 
         new_instance = super(MetaTask, cls).__call__(*args, **kwargs)
-        new_instance.sciluigi_reduce_args = sciluigi_reduce_args
-        new_instance.sciluigi_reduce_function = sciluigi_reduce_function
+        new_instance.workflow_task = workflow_task
         return new_instance
 
 
@@ -64,25 +62,6 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
 
     workflow_task = luigi.Parameter(significant=False)
     instance_name = luigi.Parameter(significant=False)
-    sciluigi_unpickling = luigi.Parameter(default=False, significant=False)
-
-    def __deepcopy__(self, memo):
-        return self
-
-    # def __reduce__(self):
-    #     return self.sciluigi_reduce_function, self.sciluigi_reduce_args
-
-    def printdict(self, inputdict):
-        for item in inputdict:
-            print item
-            if hasattr(inputdict[item], '__dict__'):
-                self.printdict(inputdict[item].__dict__)
-            else:
-                print inputdict[item]
-
-    def __setstate__(self, state):
-        print self.__class__
-        self.printdict(state)
 
     def __init__(self, *args, **kwargs):
         super(Task, self).__init__(*args, **kwargs)
