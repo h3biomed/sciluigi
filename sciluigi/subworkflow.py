@@ -17,7 +17,7 @@ class SubWorkflowTask(sciluigi.task.Task):
 
     def new_task(self, instance_name, cls, **kwargs):
         instance_name = '%s_%s' % (self.instance_name, instance_name)
-        return self.workflow_task.new_task(instance_name, cls, **kwargs)
+        return sciluigi.new_task(instance_name, cls, **kwargs)
 
     def connect_tasks(self):
         raise NotImplementedError

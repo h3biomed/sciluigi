@@ -15,14 +15,13 @@ log = logging.getLogger('sciluigi-interface')
 # ==============================================================================
 
 
-def new_task(name, cls, workflow_task, **kwargs):
+def new_task(name, cls, **kwargs):
     '''
     Instantiate a new task. Not supposed to be used by the end-user
     (use WorkflowTask.new_task() instead).
     '''
     slurminfo = None
     kwargs['instance_name'] = name
-    kwargs['workflow_task'] = workflow_task
     newtask = cls(**kwargs)
     if slurminfo is not None:
         newtask.slurminfo = slurminfo
@@ -46,15 +45,15 @@ def _new_task_unpickle(instance, instance_name, cls, kwargs, wf_dict):
 class MetaTask(luigi.task_register.Register):
     def __call__(cls, *args, **kwargs):
         # Allows us to pass in properties that aren't Luigi params
-        workflow_task = kwargs.pop('workflow_task', None)
-
+        # workflow_task = kwargs.pop('workflow_task', None)
+        #
         new_instance = super(MetaTask, cls).__call__(*args, **kwargs)
-        new_instance.workflow_task = workflow_task
+        # new_instance.workflow_task = workflow_task
         new_instance.__configure__()
         return new_instance
 
 
-class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHelpers, luigi.Task):
+class Task(sciluigi.dependencies.DependencyHelpers, luigi.Task):
     '''
     SciLuigi Task, implementing SciLuigi specific functionality for dependency resolution
     and audit trail logging.
@@ -121,16 +120,12 @@ def touch_unfulfilled_optional(task):
                 task.ex_local('touch ' + output.path)
 
 # ==============================================================================
-
-class ExternalTask(
-        sciluigi.audit.AuditTrailHelpers,
-        sciluigi.dependencies.DependencyHelpers,
-        luigi.ExternalTask):
+l
+class ExternalTask(sciluigi.dependencies.DependencyHelpers, luigi.ExternalTask):
     '''
     SviLuigi specific implementation of luigi.ExternalTask, representing existing
     files.
     '''
-    workflow_task = luigi.Parameter()
     instance_name = luigi.Parameter()
 
     def __init__(self, *args, **kwargs):

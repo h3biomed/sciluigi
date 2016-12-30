@@ -2,13 +2,11 @@
 This module contains sciluigi's subclasses of luigi's Task class.
 '''
 
-import copy
 import datetime
 import luigi
 import logging
 import os
 import sciluigi
-import sciluigi.audit
 import sciluigi.interface
 import sciluigi.dependencies
 import sciluigi.slurm
@@ -18,7 +16,7 @@ log = logging.getLogger('sciluigi-interface')
 
 # ==============================================================================
 
-class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
+class WorkflowTask(luigi.Task):
     '''
     SciLuigi-specific task, that has a method for implementing a (dynamic) workflow
     definition (workflow()).
@@ -43,15 +41,6 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         if self._wfstart == '':
             self._wfstart = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S_%f')
-
-    def get_auditdirpath(self):
-        '''
-        Get the path to the workflow-speicfic audit trail directory.
-        '''
-        self._ensure_timestamp()
-        clsname = self.__class__.__name__.lower()
-        audit_dirpath = 'sciluigi-audit/audit_%s_%s' % (clsname, self._wfstart)
-        return audit_dirpath
 
     def get_auditlogpath(self):
         '''
