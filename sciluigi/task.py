@@ -65,7 +65,10 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
 
     @property
     def workflow_task(self):
-        return MetaTask._Register__instance_cache[self.workflow_cache_key]
+        try:
+            return MetaTask._Register__instance_cache[self.workflow_cache_key]
+        except KeyError:
+            return luigi.task_register.Register._Register__instance_cache[self.workflow_cache_key]
 
     def __deepcopy__(self, memo):
         return self
