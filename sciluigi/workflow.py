@@ -25,6 +25,10 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
 
     instance_name = luigi.Parameter(default='sciluigi_workflow')
 
+    @property
+    def cache_key(self):
+        return self.__class__, tuple(_unwrap_param_kwargs(self.param_kwargs))
+
     def __init__(self, *args, **kwargs):
         super(WorkflowTask, self).__init__(*args, **kwargs)
         self._tasks = {}
@@ -138,6 +142,13 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         return newtask
 
 # ================================================================================
+
+def _unwrap_param_kwargs(param_kwargs):
+    return_list = []
+    for kwarg_key in param_kwargs:
+        return_list.append((kwarg_key, param_kwargs[kwarg_key]))
+    return return_list
+
 
 class WorkflowNotImplementedException(Exception):
     '''

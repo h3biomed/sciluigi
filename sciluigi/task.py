@@ -37,13 +37,6 @@ def _new_task_unpickle(instance, instance_name, cls, kwargs, wf_dict):
     return instance.new_task(instance_name, cls, **kwargs)
 
 
-def _unwrap_param_kwargs(param_kwargs):
-    return_list = []
-    for kwarg_key in param_kwargs:
-        return_list.append((kwarg_key, param_kwargs[kwarg_key]))
-    return return_list
-
-
 class MetaTask(luigi.task_register.Register):
     def __call__(cls, *args, **kwargs):
         # Allows us to pass in properties that aren't Luigi params
@@ -71,10 +64,6 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     @property
     def workflow_task(self):
         return MetaTask._Register__instance_cache[self.workflow_cache_key]
-
-    @property
-    def cache_key(self):
-        return self.__class__, tuple(_unwrap_param_kwargs(self.param_kwargs))
 
     def __deepcopy__(self, memo):
         return self
