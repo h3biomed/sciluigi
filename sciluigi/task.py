@@ -22,7 +22,7 @@ def new_task(name, cls, workflow_task, **kwargs):
     '''
     slurminfo = None
     kwargs['instance_name'] = name
-    kwargs['workflow_task'] = workflow_task
+    kwargs['workflow_cache_key'] = workflow_task.cache_key
     newtask = cls(**kwargs)
     if slurminfo is not None:
         newtask.slurminfo = slurminfo
@@ -32,15 +32,16 @@ def new_task(name, cls, workflow_task, **kwargs):
 def _new_task_unpickle(instance, instance_name, cls, kwargs, wf_dict):
     # Make sure the workflow has been initialized before any other unpickling is done
     if isinstance(instance, sciluigi.WorkflowTask):
-        if not hasattr(instance, '_tasks'):
-            instance._tasks = {}
         instance.__dict__.update(wf_dict)
-    else:
-        if not hasattr(instance.workflow_task, '_tasks'):
-            instance.workflow_task._tasks = {}
-        instance.workflow_task.__dict__.update(wf_dict)
     kwargs['sciluigi_unpickling'] = True
     return instance.new_task(instance_name, cls, **kwargs)
+
+
+def _unwrap_param_kwargs(param_kwargs):
+    return_list = []
+    for kwarg_key in param_kwargs:
+        return_list.append((kwarg_key, param_kwargs[kwarg_key]))
+    return return_list
 
 
 class MetaTask(luigi.task_register.Register):
@@ -63,9 +64,17 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     '''
     __metaclass__ = MetaTask
 
-    workflow_task = luigi.Parameter(significant=False)
+    workflow_cache_key = luigi.Parameter(significant=False)
     instance_name = luigi.Parameter(significant=False)
     sciluigi_unpickling = luigi.Parameter(default=False, significant=False)
+
+    @property
+    def workflow_task(self):
+        return MetaTask._Register__instance_cache[self.workflow_cache_key]
+
+    @property
+    def cache_key(self):
+        return self.__class__, tuple(_unwrap_param_kwargs(self.param_kwargs))
 
     def __deepcopy__(self, memo):
         return self
@@ -135,7 +144,7 @@ class ExternalTask(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.Depen
     SviLuigi specific implementation of luigi.ExternalTask, representing existing
     files.
     '''
-    workflow_task = luigi.Parameter(significant=False)
+    workflow_cache_key = luigi.Parameter(significant=False)
     instance_name = luigi.Parameter(significant=False)
 
     def __init__(self, *args, **kwargs):
