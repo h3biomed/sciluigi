@@ -39,11 +39,16 @@ class MetaTask(luigi.task_register.Register):
         # Allows us to pass in properties that aren't Luigi params
         sciluigi_reduce_function = kwargs.pop('sciluigi_reduce_function', None)
         sciluigi_reduce_args = kwargs.pop('sciluigi_reduce_args', None)
+        workflow_properties = kwargs.pop('workflow_properties', None)
+        sciluigi_unpickling = kwargs.pop('sciluigi_unpickling', False)
 
         new_instance = super(MetaTask, cls).__call__(*args, **kwargs)
         new_instance.sciluigi_reduce_args = sciluigi_reduce_args
         new_instance.sciluigi_reduce_function = sciluigi_reduce_function
         new_instance.sciluigi_state = new_instance.__dict__
+        new_instance.workflow_properties = workflow_properties
+        if not sciluigi_unpickling:
+            new_instance.configure_instance()
         return new_instance
 
 
@@ -55,8 +60,6 @@ class Task(sciluigi.dependencies.DependencyHelpers, luigi.Task):
     __metaclass__ = MetaTask
 
     instance_name = luigi.Parameter(significant=False)
-    workflow_properties = luigi.Parameter(significant=False)
-    sciluigi_unpickling = luigi.Parameter(default=False, significant=False)
 
     def __deepcopy__(self, memo):
         return self
@@ -64,10 +67,8 @@ class Task(sciluigi.dependencies.DependencyHelpers, luigi.Task):
     def __reduce__(self):
         return self.sciluigi_reduce_function, self.sciluigi_reduce_args, self.sciluigi_state
 
-    def __init__(self, *args, **kwargs):
-        super(Task, self).__init__(*args, **kwargs)
-        if not self.sciluigi_unpickling:
-            self.initialize_inputs_and_outputs()
+    def configure_instance(self):
+        self.initialize_inputs_and_outputs()
 
     def initialize_inputs_and_outputs(self):
         raise NotImplementedError
