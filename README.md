@@ -2,7 +2,7 @@
 
 **Please note, this is a fork of the original [SciLuigi repo](https://github.com/pharmbio/sciluigi), created by
 Samuel Lampa.  Our repo contains significant changes that have not yet been merged into the original repo, and may
-never be merged.  You can find full documentation for the H3 version INSERT LINK HERE**
+never be merged.  You can find full documentation for the H3 version [here](http://pipelines-docs.h3b.hope/sciluigi).
 
 Scientific Luigi (SciLuigi for short) is a light-weight wrapper library around [Spotify](http://spotify.com)'s [Luigi](http://github.com/spotify/luigi)
 workflow system that aims to make writing scientific workflows (consisting of
