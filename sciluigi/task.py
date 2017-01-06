@@ -56,7 +56,6 @@ class Task(sciluigi.dependencies.DependencyHelpers, luigi.Task):
     '''
     __metaclass__ = MetaTask
 
-    workflow_properties = luigi.Parameter(significant=False)
     instance_name = luigi.Parameter(significant=False)
     sciluigi_unpickling = luigi.Parameter(default=False, significant=False)
 
