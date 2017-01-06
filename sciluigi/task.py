@@ -43,8 +43,6 @@ def _new_task_unpickle(instance, instance_name, cls, kwargs, wf_dict):
     return instance.new_task(instance_name, cls, **kwargs)
 
 
-
-
 class MetaTask(luigi.task_register.Register):
     def __call__(cls, *args, **kwargs):
         # Allows us to pass in properties that aren't Luigi params
@@ -68,6 +66,7 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     workflow_task = luigi.Parameter(significant=False)
     instance_name = luigi.Parameter(significant=False)
     sciluigi_unpickling = luigi.Parameter(default=False, significant=False)
+
 
     def __deepcopy__(self, memo):
         return self
