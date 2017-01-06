@@ -22,7 +22,7 @@ def new_task(name, cls, workflow_task, **kwargs):
     '''
     slurminfo = None
     kwargs['instance_name'] = name
-    kwargs['workflow_cache_key'] = workflow_task.cache_key
+    kwargs['workflow_task'] = workflow_task
     newtask = cls(**kwargs)
     if slurminfo is not None:
         newtask.slurminfo = slurminfo
@@ -35,8 +35,14 @@ def _new_task_unpickle(instance, instance_name, cls, kwargs, wf_dict):
         if not hasattr(instance, '_tasks'):
             instance._tasks = {}
         instance.__dict__.update(wf_dict)
+    else:
+        if not hasattr(instance.workflow_task, '_tasks'):
+            instance.workflow_task._tasks = {}
+        instance.workflow_task.__dict__.update(wf_dict)
     kwargs['sciluigi_unpickling'] = True
     return instance.new_task(instance_name, cls, **kwargs)
+
+
 
 
 class MetaTask(luigi.task_register.Register):
@@ -59,16 +65,9 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     '''
     __metaclass__ = MetaTask
 
-    workflow_cache_key = luigi.Parameter(significant=False)
+    workflow_task = luigi.Parameter(significant=False)
     instance_name = luigi.Parameter(significant=False)
     sciluigi_unpickling = luigi.Parameter(default=False, significant=False)
-
-    @property
-    def workflow_task(self):
-        try:
-            return MetaTask._Register__instance_cache[self.workflow_cache_key]
-        except KeyError:
-            return self.workflow_cache_key[0](**dict(self.workflow_cache_key[1]))
 
     def __deepcopy__(self, memo):
         return self
@@ -138,7 +137,7 @@ class ExternalTask(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.Depen
     SviLuigi specific implementation of luigi.ExternalTask, representing existing
     files.
     '''
-    workflow_cache_key = luigi.Parameter(significant=False)
+    workflow_task = luigi.Parameter(significant=False)
     instance_name = luigi.Parameter(significant=False)
 
     def __init__(self, *args, **kwargs):
