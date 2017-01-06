@@ -18,7 +18,7 @@ log = logging.getLogger('sciluigi-interface')
 def new_task(name, cls, workflow_properties, **kwargs):
     slurminfo = None
     if 'sciluigi_reduce_function' not in kwargs:
-        kwargs['sciluigi_reduce_args'] = (name, cls, copy.deepcopy(kwargs))
+        kwargs['sciluigi_reduce_args'] = (name, cls, workflow_properties, copy.deepcopy(kwargs))
         kwargs['sciluigi_reduce_function'] = _new_task_unpickle
     kwargs['instance_name'] = name
     kwargs['workflow_properties'] = workflow_properties
@@ -28,10 +28,10 @@ def new_task(name, cls, workflow_properties, **kwargs):
     return newtask
 
 
-def _new_task_unpickle(instance_name, cls, kwargs):
+def _new_task_unpickle(instance_name, cls, workflow_properties, kwargs):
     # Make sure the workflow has been initialized before any other unpickling is done
     kwargs['sciluigi_unpickling'] = True
-    return new_task(instance_name, cls, **kwargs)
+    return new_task(instance_name, cls, workflow_properties, **kwargs)
 
 
 class MetaTask(luigi.task_register.Register):
