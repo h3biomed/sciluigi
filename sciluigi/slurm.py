@@ -229,11 +229,6 @@ class SlurmHelpers():
                 log.info('Slurm execution time for task %s was %ss',
                     self.instance_name,
                     self.slurm_exectime_sec)
-                self.add_auditinfo('slurm_exectime_sec', int(self.slurm_exectime_sec))
-
-            # Write this last, so as to get the main task exectime and slurm exectime together in
-            # audit log later
-            self.add_auditinfo('slurm_jobid', jobid)
 
 # ================================================================================
 

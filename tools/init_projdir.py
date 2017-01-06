@@ -10,8 +10,7 @@ projdir_struct = {
         { 'paper': None },
     'experiments' :
         { '2000-01-01-example' :
-            { 'audit':None,
-              'bin':None,
+            { 'bin':None,
               'conf':None,
               'data':None,
               'doc':None,

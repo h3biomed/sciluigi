@@ -2,22 +2,21 @@
 This module contains sciluigi's subclasses of luigi's Task class.
 '''
 
-import copy
 import datetime
 import luigi
 import logging
-import os
 import sciluigi
 import sciluigi.interface
 import sciluigi.dependencies
 import sciluigi.slurm
+from subprocess import check_call
 
 log = logging.getLogger('sciluigi-interface')
 
 
 # ==============================================================================
 
-class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
+class WorkflowTask(luigi.Task):
     '''
     SciLuigi-specific task, that has a method for implementing a (dynamic) workflow
     definition (workflow()).
@@ -42,32 +41,6 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         if self._wfstart == '':
             self._wfstart = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S_%f')
-
-    def get_auditdirpath(self):
-        '''
-        Get the path to the workflow-speicfic audit trail directory.
-        '''
-
-        self._ensure_timestamp()
-        clsname = self.__class__.__name__.lower()
-        audit_dirpath = 'sciluigi-audit/audit_%s_%s' % (clsname, self._wfstart)
-
-        return audit_dirpath
-
-    def get_auditlogpath(self):
-        '''
-        Get the path to the workflow-speicfic audit trail file.
-        '''
-        self._ensure_timestamp()
-        clsname = self.__class__.__name__.lower()
-        audit_dirpath = 'sciluigi-audit/workflow_%s_started_%s.audit' % (clsname, self._wfstart)
-        return audit_dirpath
-
-    def add_auditinfo(self, infotype, infolog):
-        '''
-        Add audit information to the audit log.
-        '''
-        return self._add_auditinfo(self.__class__.__name__.lower(), infotype, infolog)
 
     def workflow(self):
         '''
@@ -98,7 +71,7 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         Implementation of Luigi API method
         '''
-        return luigi.LocalTarget(self.get_auditlogpath())
+        return luigi.LocalTarget('sciluigi/_SUCCESS')
 
     def run(self):
         '''
@@ -106,36 +79,18 @@ class WorkflowTask(sciluigi.audit.AuditTrailHelpers, luigi.Task):
         '''
         log.debug('Running the workflow')
         if self.output().exists():
-            errmsg = ('Audit file already exists, '
+            errmsg = ('Success file already exists, '
                       'when trying to create it: %s') % self.output().path
             log.error(errmsg)
             raise Exception(errmsg)
         else:
-            with self.output().open('w') as auditfile:
-                for taskname in sorted(self._tasks):
-                    taskaudit_path = os.path.join(self.get_auditdirpath(), taskname)
-                    if os.path.exists(taskaudit_path):
-                        auditfile.write(open(taskaudit_path).read() + '\n')
+            check_call(['touch', self.output().path])
         clsname = self.__class__.__name__
         if not self._hasloggedfinish:
             log.info('-'*80)
             log.info('SciLuigi: %s Workflow Finished', clsname)
             log.info('-'*80)
             self._hasloggedfinish = True
-
-    def new_task(self, instance_name, cls, **kwargs):
-        '''
-        Create new task instance, and link it to the current workflow.
-        '''
-        if 'sciluigi_reduce_function' not in kwargs:
-            wf_dict = copy.deepcopy(self.__dict__)
-            if '_tasks' in wf_dict:
-                del wf_dict['_tasks']
-            kwargs['sciluigi_reduce_args'] = (self, instance_name, cls, copy.deepcopy(kwargs), wf_dict)
-            kwargs['sciluigi_reduce_function'] = sciluigi.task._new_task_unpickle
-        newtask = sciluigi.new_task(instance_name, cls, self, **kwargs)
-        self._tasks[instance_name] = newtask
-        return newtask
 
 # ================================================================================
 

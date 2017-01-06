@@ -5,9 +5,6 @@ Spotify's Luigi workflow system that aims to make writing scientific workflows
 flexible and modular.
 '''
 
-from sciluigi import audit
-from sciluigi.audit import AuditTrailHelpers
-
 from sciluigi import dependencies
 from sciluigi.dependencies import SubWorkflowOutput
 from sciluigi.dependencies import TaskInput

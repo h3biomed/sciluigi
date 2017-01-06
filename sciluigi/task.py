@@ -2,10 +2,10 @@
 This module contains sciluigi's subclasses of luigi's Task class.
 '''
 
+import copy
 import luigi
 import logging
 import subprocess as sub
-import sciluigi.audit
 import sciluigi.interface
 import sciluigi.dependencies
 import sciluigi.slurm
@@ -15,32 +15,23 @@ log = logging.getLogger('sciluigi-interface')
 # ==============================================================================
 
 
-def new_task(name, cls, workflow_task, **kwargs):
-    '''
-    Instantiate a new task. Not supposed to be used by the end-user
-    (use WorkflowTask.new_task() instead).
-    '''
+def new_task(name, cls, workflow_properties, **kwargs):
     slurminfo = None
+    if 'sciluigi_reduce_function' not in kwargs:
+        kwargs['sciluigi_reduce_args'] = (name, cls, copy.deepcopy(kwargs))
+        kwargs['sciluigi_reduce_function'] = _new_task_unpickle
     kwargs['instance_name'] = name
-    kwargs['workflow_task'] = workflow_task
+    kwargs['workflow_properties'] = workflow_properties
     newtask = cls(**kwargs)
     if slurminfo is not None:
         newtask.slurminfo = slurminfo
     return newtask
 
 
-def _new_task_unpickle(instance, instance_name, cls, kwargs, wf_dict):
+def _new_task_unpickle(instance_name, cls, kwargs):
     # Make sure the workflow has been initialized before any other unpickling is done
-    if isinstance(instance, sciluigi.WorkflowTask):
-        if not hasattr(instance, '_tasks'):
-            instance._tasks = {}
-        instance.__dict__.update(wf_dict)
-    else:
-        if not hasattr(instance.workflow_task, '_tasks'):
-            instance.workflow_task._tasks = {}
-        instance.workflow_task.__dict__.update(wf_dict)
     kwargs['sciluigi_unpickling'] = True
-    return instance.new_task(instance_name, cls, **kwargs)
+    return new_task(instance_name, cls, **kwargs)
 
 
 class MetaTask(luigi.task_register.Register):
@@ -48,22 +39,24 @@ class MetaTask(luigi.task_register.Register):
         # Allows us to pass in properties that aren't Luigi params
         sciluigi_reduce_function = kwargs.pop('sciluigi_reduce_function', None)
         sciluigi_reduce_args = kwargs.pop('sciluigi_reduce_args', None)
+        workflow_properties = kwargs.pop('workflow_properties', None)
 
         new_instance = super(MetaTask, cls).__call__(*args, **kwargs)
         new_instance.sciluigi_reduce_args = sciluigi_reduce_args
         new_instance.sciluigi_reduce_function = sciluigi_reduce_function
         new_instance.sciluigi_state = new_instance.__dict__
+        new_instance.workflow_properties = workflow_properties
         return new_instance
 
 
-class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHelpers, luigi.Task):
+class Task(sciluigi.dependencies.DependencyHelpers, luigi.Task):
     '''
     SciLuigi Task, implementing SciLuigi specific functionality for dependency resolution
     and audit trail logging.
     '''
     __metaclass__ = MetaTask
 
-    workflow_task = luigi.Parameter(significant=False)
+    workflow_properties = luigi.Parameter(significant=False)
     instance_name = luigi.Parameter(significant=False)
     sciluigi_unpickling = luigi.Parameter(default=False, significant=False)
 
@@ -130,12 +123,12 @@ def touch_unfulfilled_optional(task):
 
 # ==============================================================================
 
-class ExternalTask(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHelpers, luigi.ExternalTask):
+class ExternalTask(sciluigi.dependencies.DependencyHelpers, luigi.ExternalTask):
     '''
     SviLuigi specific implementation of luigi.ExternalTask, representing existing
     files.
     '''
-    workflow_task = luigi.Parameter(significant=False)
+    workflow_properties = luigi.Parameter(significant=False)
     instance_name = luigi.Parameter(significant=False)
 
     def __init__(self, *args, **kwargs):
