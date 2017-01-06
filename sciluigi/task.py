@@ -39,13 +39,11 @@ class MetaTask(luigi.task_register.Register):
         # Allows us to pass in properties that aren't Luigi params
         sciluigi_reduce_function = kwargs.pop('sciluigi_reduce_function', None)
         sciluigi_reduce_args = kwargs.pop('sciluigi_reduce_args', None)
-        workflow_properties = kwargs.pop('workflow_properties', None)
 
         new_instance = super(MetaTask, cls).__call__(*args, **kwargs)
         new_instance.sciluigi_reduce_args = sciluigi_reduce_args
         new_instance.sciluigi_reduce_function = sciluigi_reduce_function
         new_instance.sciluigi_state = new_instance.__dict__
-        new_instance.workflow_properties = workflow_properties
         return new_instance
 
 
@@ -57,6 +55,7 @@ class Task(sciluigi.dependencies.DependencyHelpers, luigi.Task):
     __metaclass__ = MetaTask
 
     instance_name = luigi.Parameter(significant=False)
+    workflow_properties = luigi.Parameter(significant=False)
     sciluigi_unpickling = luigi.Parameter(default=False, significant=False)
 
     def __deepcopy__(self, memo):
