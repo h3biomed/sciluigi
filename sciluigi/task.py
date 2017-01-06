@@ -65,7 +65,6 @@ class Task(sciluigi.audit.AuditTrailHelpers, sciluigi.dependencies.DependencyHel
     instance_name = luigi.Parameter(significant=False)
     sciluigi_unpickling = luigi.Parameter(default=False, significant=False)
 
-
     def __deepcopy__(self, memo):
         return self
 
