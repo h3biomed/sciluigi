@@ -18,7 +18,7 @@ with open('README.rst') as fobj:
 
 setup(
     name='h3sciluigi',
-    version='1.1.1',
+    version='2.0.0',
     description='Helper library for writing dynamic, flexible workflows in luigi',
     long_description=long_description,
     author='Samuel Lampa and Michael Soltow',
@@ -30,7 +30,7 @@ setup(
         'sciluigi',
     ],
     install_requires=[
-        'luigi',
+        'h3luigi',
         'sphinx_rtd_theme'
         ],
     entry_points={
