@@ -54,14 +54,16 @@ Initializing Tasks
 
 The first step is to initialize all of the tasks that will make up your sub-workflow.  To do this, you'll need to
 implement the :meth:`~sciluigi.subworkflow.SubWorkflowTask.initialize_tasks` method.  Within this method, you simply
-declare tasks in the :doc:`same way as you do within a Workflow's workflow method <workflows>`.  See example below.
+declare tasks in the :doc:`same way as you do within a Workflow's workflow method <workflows>`.  Note that any workflow
+properties passed into this sub-worfklow from the parent workflow will be available by using ``self.workflow_properties``.
+See example below.
 
 .. code-block:: python
 
     def initialize_tasks(self):
-        self.my_first_task = self.new_task('My Task Name', MyTask, task_param='foo', another_task_param='bar')
-        self.my_second_task = self.new_task('My Other Task Name', MyOtherTask, yet_another_task_param='baz')
-        self.my_third_task = self.new_task('My Third Task Name', MyThirdTask)
+        self.my_first_task = new_task('My Task Name', MyTask, self.workflow_properties, task_param='foo', another_task_param='bar')
+        self.my_second_task = new_task('My Other Task Name', MyOtherTask, self.workflow_properties, yet_another_task_param='baz')
+        self.my_third_task = new_task('My Third Task Name', MyThirdTask, self.workflow_properties)
 
 Declaring Inputs and Outputs
 -----------------------------
@@ -113,7 +115,7 @@ sub-workflow's inputs and outputs.  See the example below.
 Example: Using a Sub-Workflow
 -------------------------------
 
-To use a sub-workflow within a workflow, you simply call :meth:`~sciluigi.workflow.WorkflowTask.new_task` as you would
+To use a sub-workflow within a workflow, you simply call :func:`~sciluigi.workflow.task.new_task` as you would
 within a workflow, but you pass in the sub-workflow instead of a task.  You can then connect the sub-workflow's inputs
 and outputs to the inputs and ouputs of other tasks within your workflow.  The following example illustrates the full
 use of a sub-workflow, including the sub-workflow declaration itself as well as the use within a larger workflow.  The
@@ -171,15 +173,15 @@ naming follows the naming used in the diagrams presented in the :ref:`overview <
 
 .. code-block:: python
 
-    from sciluigi import SubWorkflowOutput, SubWorkflowTask, TaskInput
+    from sciluigi import new_task, SubWorkflowOutput, SubWorkflowTask, TaskInput
 
     from my_tasks import TaskB, TaskC
 
     class SubWorkflowA(SubWorkflowTask):
 
         def initialize_tasks(self):
-            self.task_b = self.new_task('TaskB', TaskB)
-            self.task_c = self.new_task('TaskC', TaskC)
+            self.task_b = new_task('TaskB', TaskB, self.workflow_properties)
+            self.task_c = new_task('TaskC', TaskC, self.workflow_properties)
 
         def initialize_inputs_and_outputs(self):
             self.in_subworkflow_input = TaskInput()
@@ -197,7 +199,7 @@ naming follows the naming used in the diagrams presented in the :ref:`overview <
 
 .. code-block:: python
 
-    from sciluigi import WorkflowTas
+    from sciluigi import new_task, WorkflowTask
 
     from my_tasks import TaskA, TaskD
     from my_sub_workflow import SubWorkflowA
@@ -205,9 +207,10 @@ naming follows the naming used in the diagrams presented in the :ref:`overview <
     class MyWorkflow(WorkflowTask):
 
         def workflow(self):
-            task_a = self.new_task('TaskA', TaskA)
-            subworkflow_a = self.new_task('SubWorkflowA', SubWorkflowA)
-            task_d = self.new_task('TaskD', TaskD)
+            wf_props = {'wf_name': 'foo', 'wf_bar': 'baz'}
+            task_a = new_task('TaskA', TaskA, wf_props)
+            subworkflow_a = new_task('SubWorkflowA', SubWorkflowA, wf_props)
+            task_d = new_task('TaskD', TaskD, wf_props)
 
             subworkflow_a.in_subworkflow_input.connect(task_a.out_task_a_output)
 

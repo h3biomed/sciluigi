@@ -47,16 +47,17 @@ Composing the Workflow Body
 
 All of a workflow's logic must be placed inside of a :meth:`~sciluigi.workflow.WorkflowTask.workflow` method.  As
 stated in the overview, this method has two goals.  The first goal is to declare all tasks, and this goal can be
-accomplished by calling the workflow's :meth:`~sciluigi.workflow.WorkflowTask.new_task` method, as in the following
+accomplished by calling the workflow's :func:`~sciluigi.task.new_task` method, as in the following
 example:
 
 .. code-block:: python
 
-    my_first_task = self.new_task('My Task Name', MyTask, task_param='foo', another_task_param='bar')
-    my_second_task = self.new_task('My Other Task Name', MyOtherTask, yet_another_task_param='baz')
-    my_third_task = self.new_task('My Third Task Name', MyThirdTask)
+    wf_props = {'wf_name': self.instance_name, 'wf_foo': self.foo}
+    my_first_task = new_task('My Task Name', MyTask, task_param='foo', wf_props, another_task_param='bar')
+    my_second_task = new_task('My Other Task Name', MyOtherTask, wf_props, yet_another_task_param='baz')
+    my_third_task = new_task('My Third Task Name', MyThirdTask, wf_props)
 
-The arguments to the :meth:`~sciluigi.workflow.WorkflowTask.new_task` method consist of:
+The arguments to the :func:`~sciluigi.task.new_task` function consist of:
 
 - **The task name.**  This can really be anything you want, but you should make it unique.  This name will be one of the
   criteria used by the Luigi scheduler to determine the uniqueness of a task.  Therefore, if you initialize two
@@ -64,6 +65,11 @@ The arguments to the :meth:`~sciluigi.workflow.WorkflowTask.new_task` method con
   different tasks.
 
 - **The task itself.**  This is the task class that will be run.
+
+- **Properties of this workflow**  This can be an object of any type (i.e. a dict) that contains workflow-level
+  properties that the new task will need to reference.  The advantage of using a properties object rather than normal
+  Luigi parameters (see the next bullet point) is that you can pass the same workflow-level properties to all of the
+  workflow's tasks without redundantly defining corresponding parameters on each task and passing them in.
 
 - **The task parameters, if necessary.**  If your task has any parameters declared with ``luigi.Parameter()``, the
   value of those parameters would be passed in as named arguments here.
@@ -102,7 +108,7 @@ Putting it all together, a workflow should look something like this:
 .. code-block:: python
 
     import luigi
-    from sciluigi import WorkflowTask
+    from sciluigi import new_task, WorkflowTask
 
     class MyWorkflow(WorkflowTask):
 
@@ -110,10 +116,10 @@ Putting it all together, a workflow should look something like this:
         my_other_param = luigi.Parameter()
 
         def workflow(self):
-
-            my_first_task = self.new_task('My Task Name', MyTask, task_param=self.my_param, another_task_param=self.my_other_param)
-            my_second_task = self.new_task('My Other Task Name', MyOtherTask, yet_another_task_param='baz')
-            my_third_task = self.new_task('My Third Task Name', MyThirdTask)
+            wf_props = {'my_param': self.my_param, 'my_other_param': self.my_other_param}
+            my_first_task = new_task('My Task Name', MyTask, wf_props, task_param='foo')
+            my_second_task = new_task('My Other Task Name', MyOtherTask, wf_props, another_task_param='bar', yet_another_task_param='baz')
+            my_third_task = new_task('My Third Task Name', MyThirdTask, wf_props)
 
             my_second_task.in_some_input.connect(my_first_task.out_some_output)
 
