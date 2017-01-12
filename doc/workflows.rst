@@ -47,7 +47,7 @@ Composing the Workflow Body
 
 All of a workflow's logic must be placed inside of a :meth:`~sciluigi.workflow.WorkflowTask.workflow` method.  As
 stated in the overview, this method has two goals.  The first goal is to declare all tasks, and this goal can be
-accomplished by calling the workflow's :func:`~sciluigi.task.new_task` method, as in the following
+accomplished by calling the :func:`~sciluigi.task.new_task` function, as in the following
 example:
 
 .. code-block:: python
