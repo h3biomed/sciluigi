@@ -4,12 +4,10 @@ This module contains sciluigi's subclasses of luigi's Task class.
 
 import datetime
 import luigi
-from luigi.six import iteritems
 import logging
 import os
 import os.path as op
 import random
-from subprocess import check_call
 import time
 
 log = logging.getLogger('sciluigi-interface')
@@ -94,7 +92,7 @@ class WorkflowTask(luigi.Task):
             log.error(errmsg)
             raise Exception(errmsg)
         else:
-            check_call(['touch', self.output().path])
+            self._create_output(self.__class__.__name__.lower())
         clsname = self.__class__.__name__
         if not self._hasloggedfinish:
             log.info('-'*80)
@@ -102,36 +100,20 @@ class WorkflowTask(luigi.Task):
             log.info('-'*80)
             self._hasloggedfinish = True
 
-    @luigi.Task.event_handler(luigi.Event.PROCESSING_TIME)
-    def save_end_time(self, task_exectime_sec):
-        '''
-        Log end of execution of task, with execution time.
-        '''
-        msg = 'Workflow {task} finished after {proctime:.3f}s'.format(
-            task=self.get_instance_name(),
-            proctime=task_exectime_sec)
-        log.info(msg)
-        self._add_output_info(self.__class__.__name__.lower(), 'task_exectime_sec', '%.3f' % task_exectime_sec)
-        for paramname, paramval in iteritems(self.param_kwargs):
-            if paramname not in ['workflow_task']:
-                self.add_auditinfo(paramname, paramval)
-
-    def _add_output_info(self, instance_name, infotype, infoval):
+    def _create_output(self):
         '''
         Save audit information in a designated file, specific for this task.
         '''
-        dirpath = self.get_output_path()
+        output_file = self.get_output_path()
+        dirpath = op.dirname(output_file)
         if not op.isdir(dirpath):
             time.sleep(random.random())
             if not os.path.isdir(dirpath):
                 os.makedirs(dirpath)
 
-        output_file = os.path.join(dirpath, instance_name)
         if not os.path.exists(output_file):
             with open(output_file, 'w') as afile:
                 afile.write('[%s]\n' % self.instance_name)
-        with open(output_file, 'a') as afile:
-            afile.write('%s: %s\n' % (infotype, infoval))
 
 # ================================================================================
 
