@@ -1,9 +1,9 @@
 .. figure:: http://i.imgur.com/2aMT04J.png
    :alt: SciLuigi Logo
 
-**Please note, this is a fork of the original** |sciluigi repo|_, **created by
-Samuel Lampa.  Our repo contains significant changes that have not yet been merged into the original repo, and may
-never be merged.  You can find full documentation for the H3 version INSERT LINK HERE**
+**Please note, this is a fork of the original** |sciluigi repo|_, **created by Samuel Lampa.**  
+Our repo contains significant changes that have not yet been merged into the original repo, and may
+never be merged.  You can find full documentation for the H3 version `here <http://pipelines-docs.h3b.hope/sciluigi>`__
 
 Scientific Luigi (SciLuigi for short) is a light-weight wrapper library
 around `Spotify <http://spotify.com>`__'s `Luigi <http://github.com/spotify/luigi>`__ workflow system that aims to
