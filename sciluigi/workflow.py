@@ -92,7 +92,7 @@ class WorkflowTask(luigi.Task):
             log.error(errmsg)
             raise Exception(errmsg)
         else:
-            self._create_output(self.__class__.__name__.lower())
+            self._create_output()
         clsname = self.__class__.__name__
         if not self._hasloggedfinish:
             log.info('-'*80)
