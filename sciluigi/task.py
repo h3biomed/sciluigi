@@ -15,12 +15,12 @@ log = logging.getLogger('sciluigi-interface')
 # ==============================================================================
 
 
-def new_task(name, cls, workflow_properties, **kwargs):
+def new_task(instance_name, cls, workflow_properties, **kwargs):
     slurminfo = None
     if 'sciluigi_reduce_function' not in kwargs:
-        kwargs['sciluigi_reduce_args'] = (name, cls, workflow_properties, copy.deepcopy(kwargs))
+        kwargs['sciluigi_reduce_args'] = (instance_name, cls, workflow_properties, copy.deepcopy(kwargs))
         kwargs['sciluigi_reduce_function'] = _new_task_unpickle
-    kwargs['instance_name'] = name
+    kwargs['instance_name'] = instance_name
     kwargs['workflow_properties'] = workflow_properties
     newtask = cls(**kwargs)
     if slurminfo is not None:
