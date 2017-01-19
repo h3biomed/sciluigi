@@ -6,7 +6,7 @@ flexible and modular.
 '''
 
 from sciluigi import dependencies
-from sciluigi.dependencies import WorkflowOutput
+from sciluigi.dependencies import SubWorkflowOutput
 from sciluigi.dependencies import TaskInput
 from sciluigi.dependencies import TargetInfo
 from sciluigi.dependencies import S3TargetInfo
@@ -29,6 +29,9 @@ from sciluigi.slurm import SlurmHelpers
 from sciluigi.slurm import RUNMODE_LOCAL
 from sciluigi.slurm import RUNMODE_HPC
 from sciluigi.slurm import RUNMODE_MPI
+
+from sciluigi import subworkflow
+from sciluigi.subworkflow import SubWorkflowTask
 
 from sciluigi import task
 from sciluigi.task import new_task
