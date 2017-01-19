@@ -70,7 +70,7 @@ class TaskInput(object):
             for info in connection.target_infos:
                 self.connect(info)
             connection.downstream_inputs.add(self)
-            if isinstance(connection, SubWorkflowOutput) and not isinstance(self, SubWorkflowOutput):
+            if isinstance(connection, WorkflowOutput) and not isinstance(self, WorkflowOutput):
                 self._sub_workflow_tasks.add(connection.task)  # Make note of sub_workflow_task if applicable
             for downstream_input in self.downstream_inputs:
                 downstream_input.connect(connection)
@@ -84,10 +84,10 @@ class TaskInput(object):
         self.target_infos.remove(target_info)
 
 
-class SubWorkflowOutput(TaskInput):
+class WorkflowOutput(TaskInput):
 
     def __init__(self, sub_workflow_task):
-        super(SubWorkflowOutput, self).__init__()
+        super(WorkflowOutput, self).__init__()
         self._sub_workflow_tasks = set([sub_workflow_task])
         self.sub_workflow_reqs = set([])
 
@@ -101,7 +101,7 @@ class SubWorkflowOutput(TaskInput):
 
     def connect(self, connection):
         # if hasattr(connection, 'target_infos'):
-        #     raise Exception('You can only connect TargetInfo objects to a SubWorkflowOuput')
+        #     raise Exception('You can only connect TargetInfo objects to a WorkflowOuput')
 
         if isinstance(connection, list):
             for item in connection:
@@ -112,7 +112,7 @@ class SubWorkflowOutput(TaskInput):
                     self.sub_workflow_reqs.add(task)
             else:
                 self.sub_workflow_reqs.add(connection.task)
-            super(SubWorkflowOutput, self).connect(connection)
+            super(WorkflowOutput, self).connect(connection)
 
 
 class TargetInfo(object):
@@ -273,7 +273,7 @@ class DependencyHelpers(object):
             for _, valitem in iteritems(val):
                 target_infos = self._parse_outputitem(valitem, target_infos)
         else:
-            raise Exception('Input item is neither callable, SubWorkflowOutput, TargetInfo, nor list: %s' % val)
+            raise Exception('Input item is neither callable, WorkflowOutput, TargetInfo, nor list: %s' % val)
         return target_infos
 
     def _is_property(self, attrname):
