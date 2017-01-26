@@ -59,29 +59,29 @@ class TaskInput(object):
     def __iter__(self):
         return self.target_infos.__iter__()
 
-    def connect(self, connection):
+    def receive_from(self, connection):
         if isinstance(connection, list):
             for item in connection:
-                self.connect(item)
+                self.receive_from(item)
         elif hasattr(connection, 'target_infos'):
             # If the user tried to connect a TaskInput, connect all of the TaskInput's TargetInfos to self
             # Then add self to the TaskInput's downstream connections
             # Also make sure to connect this connection to any of self's downstream inputs.
             for info in connection.target_infos:
-                self.connect(info)
+                self.receive_from(info)
             connection.downstream_inputs.add(self)
             if isinstance(connection, SubWorkflowOutput) and not isinstance(self, SubWorkflowOutput):
                 self._sub_workflow_tasks.add(connection.task)  # Make note of sub_workflow_task if applicable
             for downstream_input in self.downstream_inputs:
-                downstream_input.connect(connection)
+                downstream_input.receive_from(connection)
         else:
             # If the user is connecting a TargetInfo, add the TargetInfo to this input and any downstream inputs
             self.target_infos.add(connection)
             for downstream_input in self.downstream_inputs:
                 downstream_input.target_infos.add(connection)
 
-    def disconnect(self, target_info):
-        self.target_infos.remove(target_info)
+    def send_to(self, connection):
+        _send(self, connection)
 
 
 class SubWorkflowOutput(TaskInput):
@@ -99,20 +99,26 @@ class SubWorkflowOutput(TaskInput):
     def tasks(self):
         return set([self.task])
 
-    def connect(self, connection):
+    def receive_from(self, connection):
         # if hasattr(connection, 'target_infos'):
         #     raise Exception('You can only connect TargetInfo objects to a SubWorkflowOuput')
 
         if isinstance(connection, list):
             for item in connection:
-                self.connect(item)
+                self.receive_from(item)
         else:
             if hasattr(connection, 'tasks'):
                 for task in connection.tasks:
                     self.sub_workflow_reqs.add(task)
             else:
                 self.sub_workflow_reqs.add(connection.task)
-            super(SubWorkflowOutput, self).connect(connection)
+            super(SubWorkflowOutput, self).receive_from(connection)
+
+
+def _send(from_obj, to_obj):
+    if not hasattr(to_obj, 'receive_from'):
+        raise ValueError('Given connection cannot receive objects')
+    to_obj.receive_from(from_obj)
 
 
 class TargetInfo(object):
@@ -134,6 +140,9 @@ class TargetInfo(object):
         Forward open method, from luigi's target class
         '''
         return self.target.open(*args, **kwargs)
+
+    def send_to(self, connection):
+        _send(self, connection)
 
 
 # ==============================================================================
