@@ -22,10 +22,6 @@ def new_task(instance_name, cls, workflow_properties, **kwargs):
         kwargs['sciluigi_reduce_function'] = _new_task_unpickle
     kwargs['instance_name'] = instance_name
     kwargs['workflow_properties'] = workflow_properties
-    if 'sciluigi_reduce_args' not in kwargs or kwargs['sciluigi_reduce_args'] is None:
-        log.info('Debugging args:')
-        log.info(kwargs)
-        log.info(cls.__name__)
     newtask = cls(**kwargs)
     if slurminfo is not None:
         newtask.slurminfo = slurminfo
@@ -45,6 +41,10 @@ class MetaTask(luigi.task_register.Register):
         sciluigi_reduce_args = kwargs.pop('sciluigi_reduce_args', None)
         workflow_properties = kwargs.pop('workflow_properties', None)
         sciluigi_unpickling = kwargs.pop('sciluigi_unpickling', False)
+
+        if sciluigi_reduce_args is None:
+            log.info('Hit')
+            log.info(kwargs)
 
         new_instance = super(MetaTask, cls).__call__(*args, **kwargs)
         new_instance.sciluigi_reduce_args = sciluigi_reduce_args
