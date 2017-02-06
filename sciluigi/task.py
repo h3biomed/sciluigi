@@ -20,10 +20,6 @@ def new_task(instance_name, cls, workflow_properties, **kwargs):
     if 'sciluigi_reduce_function' not in kwargs:
         kwargs['sciluigi_reduce_args'] = (instance_name, cls, workflow_properties, copy.deepcopy(kwargs))
         kwargs['sciluigi_reduce_function'] = _new_task_unpickle
-    else:
-        log.info(kwargs['sciluigi_reduce_function'])
-        log.info(type(kwargs['sciluigi_reduce_args']))
-        log.info(kwargs['sciluigi_reduce_args'])
     kwargs['instance_name'] = instance_name
     kwargs['workflow_properties'] = workflow_properties
     newtask = cls(**kwargs)
@@ -69,6 +65,8 @@ class Task(sciluigi.dependencies.DependencyHelpers, luigi.Task):
         return self
 
     def __reduce__(self):
+        log.info('Printing args:')
+        log.info(self.sciluigi_reduce_args)
         return self.sciluigi_reduce_function, self.sciluigi_reduce_args, self.sciluigi_state
 
     def configure_instance(self):
