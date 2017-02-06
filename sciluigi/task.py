@@ -34,11 +34,15 @@ def _new_task_unpickle(instance_name, cls, workflow_properties, kwargs):
     return new_task(instance_name, cls, workflow_properties, **kwargs)
 
 
+def _constructor_unpickle(cls, args, kwargs):
+    return cls(*args, **kwargs)
+
+
 class MetaTask(luigi.task_register.Register):
     def __call__(cls, *args, **kwargs):
         # Allows us to pass in properties that aren't Luigi params
-        sciluigi_reduce_function = kwargs.pop('sciluigi_reduce_function', None)
-        sciluigi_reduce_args = kwargs.pop('sciluigi_reduce_args', None)
+        sciluigi_reduce_function = kwargs.pop('sciluigi_reduce_function', _constructor_unpickle)
+        sciluigi_reduce_args = kwargs.pop('sciluigi_reduce_args', (cls, args, kwargs))
         workflow_properties = kwargs.pop('workflow_properties', None)
         sciluigi_unpickling = kwargs.pop('sciluigi_unpickling', False)
 
