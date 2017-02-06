@@ -22,6 +22,10 @@ def new_task(instance_name, cls, workflow_properties, **kwargs):
         kwargs['sciluigi_reduce_function'] = _new_task_unpickle
     kwargs['instance_name'] = instance_name
     kwargs['workflow_properties'] = workflow_properties
+    if 'sciluigi_reduce_args' not in kwargs:
+        log.info('Debugging args:')
+        log.info(kwargs)
+        log.info(cls.__name__)
     newtask = cls(**kwargs)
     if slurminfo is not None:
         newtask.slurminfo = slurminfo
