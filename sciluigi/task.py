@@ -22,7 +22,7 @@ def new_task(instance_name, cls, workflow_properties, **kwargs):
         kwargs['sciluigi_reduce_function'] = _new_task_unpickle
     kwargs['instance_name'] = instance_name
     kwargs['workflow_properties'] = workflow_properties
-    if 'sciluigi_reduce_args' not in kwargs:
+    if 'sciluigi_reduce_args' not in kwargs or kwargs['sciluigi_reduce_args'] is None:
         log.info('Debugging args:')
         log.info(kwargs)
         log.info(cls.__name__)
