@@ -42,10 +42,6 @@ class MetaTask(luigi.task_register.Register):
         workflow_properties = kwargs.pop('workflow_properties', None)
         sciluigi_unpickling = kwargs.pop('sciluigi_unpickling', False)
 
-        if sciluigi_reduce_args is None:
-            log.info('Hit')
-            log.info(kwargs)
-
         new_instance = super(MetaTask, cls).__call__(*args, **kwargs)
         new_instance.sciluigi_reduce_args = sciluigi_reduce_args
         new_instance.sciluigi_reduce_function = sciluigi_reduce_function
@@ -71,6 +67,7 @@ class Task(sciluigi.dependencies.DependencyHelpers, luigi.Task):
     def __reduce__(self):
         log.info('Printing args:')
         log.info(self.sciluigi_reduce_args)
+        log.info(self.__class__.__name__)
         return self.sciluigi_reduce_function, self.sciluigi_reduce_args, self.sciluigi_state
 
     def configure_instance(self):
