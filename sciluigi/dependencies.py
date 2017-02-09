@@ -214,6 +214,12 @@ class DependencyHelpers(object):
 
         if isinstance(val, TaskInput):
             tasks += val.tasks
+        elif isinstance(val, dict):
+            for item in val.values():
+                tasks = self._parse_inputitem(item, tasks)
+        elif isinstance(val, list):
+            for item in val:
+                tasks = self._parse_inputitem(item, tasks)
         else:
             raise Exception('Input item is neither callable nor a TaskInput: %s' % val)
         return tasks
