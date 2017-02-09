@@ -67,10 +67,10 @@ class Task(sciluigi.dependencies.DependencyHelpers, luigi.Task):
     def __reduce__(self):
         return self.sciluigi_reduce_function, self.sciluigi_reduce_args, self.sciluigi_state
 
-    def create_input(self, name):
+    def create_input(self, name, value):
         if not name.startswith('in_'):
             name = 'in_' + name
-        setattr(self, name, sciluigi.dependencies.TaskInput(self))
+        setattr(self, name, value)
 
     def create_output(self, name, value):
         if not name.startswith('out_'):
