@@ -4,6 +4,7 @@ the dependency graph of workflows.
 '''
 
 import boto3
+from collections import Mapping, Sequence
 import luigi
 from luigi.s3 import S3Client, S3Target
 from luigi.six import iteritems
@@ -214,6 +215,12 @@ class DependencyHelpers(object):
 
         if isinstance(val, TaskInput):
             tasks += val.tasks
+        elif isinstance(val, Sequence):
+            for inputitem in val:
+                tasks += inputitem.tasks
+        elif isinstance(val, Mapping):
+            for inputitem in val.values():
+                tasks += inputitem.tasks
         else:
             raise Exception('Input item is neither callable nor a TaskInput: %s' % val)
         return tasks
@@ -275,10 +282,10 @@ class DependencyHelpers(object):
         elif isinstance (val, TaskInput):
             for info in val:
                 target_infos.append(info)
-        elif isinstance(val, list):
+        elif isinstance(val, Sequence):
             for valitem in val:
                 target_infos = self._parse_outputitem(valitem, target_infos)
-        elif isinstance(val, dict):
+        elif isinstance(val, Mapping):
             for _, valitem in iteritems(val):
                 target_infos = self._parse_outputitem(valitem, target_infos)
         else:
