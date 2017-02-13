@@ -189,7 +189,14 @@ class DependencyHelpers(object):
         input_attrs = []
         for attrname, attrval in iteritems(self.__dict__):
             if 'in_' == attrname[0:3]:
-                input_attrs.append(attrval)
+                if isinstance(attrval, Mapping):
+                    for item in attrval.values():
+                        input_attrs.append(item)
+                elif isinstance(attrval, Sequence):
+                    for item in attrval:
+                        input_attrs.append(item)
+                else:
+                    input_attrs.append(attrval)
         return input_attrs
 
     def _upstream_tasks(self):
@@ -215,12 +222,6 @@ class DependencyHelpers(object):
 
         if isinstance(val, TaskInput):
             tasks += val.tasks
-        elif isinstance(val, Sequence):
-            for inputitem in val:
-                tasks += inputitem.tasks
-        elif isinstance(val, Mapping):
-            for inputitem in val.values():
-                tasks += inputitem.tasks
         else:
             raise Exception('Input item is neither callable nor a TaskInput: %s' % val)
         return tasks
@@ -244,11 +245,12 @@ class DependencyHelpers(object):
             if self._is_property(attrname):
                 continue  # Properties can't be outputs
             if 'out_' == attrname[0:4]:
-                if isinstance(attrval, dict):
+                if isinstance(attrval, Mapping):
                     for key in attrval:
                         output_attrs.append(attrval[key])
-                elif isinstance(attrval, list):
-                    output_attrs += attrval
+                elif isinstance(attrval, Sequence):
+                    for item in attrval:
+                        output_attrs += item
                 else:
                     output_attrs.append(attrval)
         return output_attrs
@@ -282,12 +284,6 @@ class DependencyHelpers(object):
         elif isinstance (val, TaskInput):
             for info in val:
                 target_infos.append(info)
-        elif isinstance(val, Sequence):
-            for valitem in val:
-                target_infos = self._parse_outputitem(valitem, target_infos)
-        elif isinstance(val, Mapping):
-            for _, valitem in iteritems(val):
-                target_infos = self._parse_outputitem(valitem, target_infos)
         else:
             raise Exception('Input item is neither callable, SubWorkflowOutput, TargetInfo, nor list: %s' % val)
         return target_infos
