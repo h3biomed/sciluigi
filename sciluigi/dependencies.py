@@ -61,8 +61,11 @@ class TaskInput(object):
         return self.target_infos.__iter__()
 
     def receive_from(self, connection):
-        if isinstance(connection, list):
+        if isinstance(connection, Sequence):
             for item in connection:
+                self.receive_from(item)
+        elif isinstance(connection, Mapping):
+            for item in connection.values():
                 self.receive_from(item)
         elif hasattr(connection, 'target_infos'):
             # If the user tried to connect a TaskInput, connect all of the TaskInput's TargetInfos to self
