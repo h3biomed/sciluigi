@@ -253,7 +253,7 @@ class DependencyHelpers(object):
                         output_attrs.append(attrval[key])
                 elif isinstance(attrval, Sequence):
                     for item in attrval:
-                        output_attrs += item
+                        output_attrs.append(item)
                 else:
                     output_attrs.append(attrval)
         return output_attrs
