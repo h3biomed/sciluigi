@@ -93,7 +93,6 @@ class SubWorkflowOutput(TaskInput):
     def __init__(self, sub_workflow_task):
         super(SubWorkflowOutput, self).__init__()
         self._sub_workflow_tasks = set([sub_workflow_task])
-        self.sub_workflow_reqs = set([])
 
     @property
     def task(self):
@@ -101,22 +100,7 @@ class SubWorkflowOutput(TaskInput):
 
     @property
     def tasks(self):
-        return set([self.task])
-
-    def receive_from(self, connection):
-        # if hasattr(connection, 'target_infos'):
-        #     raise Exception('You can only connect TargetInfo objects to a SubWorkflowOuput')
-
-        if isinstance(connection, list):
-            for item in connection:
-                self.receive_from(item)
-        else:
-            if hasattr(connection, 'tasks'):
-                for task in connection.tasks:
-                    self.sub_workflow_reqs.add(task)
-            else:
-                self.sub_workflow_reqs.add(connection.task)
-            super(SubWorkflowOutput, self).receive_from(connection)
+        return self._sub_workflow_tasks
 
 
 def _send(from_obj, to_obj):
