@@ -17,3 +17,6 @@ class SubWorkflowTask(sciluigi.task.Task):
 
     def connect_tasks(self):
         raise NotImplementedError
+
+    def requires(self):
+        return [info.task for info in self.output_infos()]
