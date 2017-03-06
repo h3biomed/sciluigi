@@ -4,6 +4,7 @@ the dependency graph of workflows.
 '''
 
 import boto3
+from collections import Mapping, Sequence
 import luigi
 from luigi.s3 import S3Client, S3Target
 from luigi.six import iteritems
@@ -59,29 +60,32 @@ class TaskInput(object):
     def __iter__(self):
         return self.target_infos.__iter__()
 
-    def connect(self, connection):
-        if isinstance(connection, list):
+    def receive_from(self, connection):
+        if isinstance(connection, Sequence):
             for item in connection:
-                self.connect(item)
+                self.receive_from(item)
+        elif isinstance(connection, Mapping):
+            for item in connection.values():
+                self.receive_from(item)
         elif hasattr(connection, 'target_infos'):
             # If the user tried to connect a TaskInput, connect all of the TaskInput's TargetInfos to self
             # Then add self to the TaskInput's downstream connections
             # Also make sure to connect this connection to any of self's downstream inputs.
             for info in connection.target_infos:
-                self.connect(info)
+                self.receive_from(info)
             connection.downstream_inputs.add(self)
             if isinstance(connection, WorkflowOutput) and not isinstance(self, WorkflowOutput):
                 self._sub_workflow_tasks.add(connection.task)  # Make note of sub_workflow_task if applicable
             for downstream_input in self.downstream_inputs:
-                downstream_input.connect(connection)
+                downstream_input.receive_from(connection)
         else:
             # If the user is connecting a TargetInfo, add the TargetInfo to this input and any downstream inputs
             self.target_infos.add(connection)
             for downstream_input in self.downstream_inputs:
                 downstream_input.target_infos.add(connection)
 
-    def disconnect(self, target_info):
-        self.target_infos.remove(target_info)
+    def send_to(self, connection):
+        _send(self, connection)
 
 
 class WorkflowOutput(TaskInput):
@@ -99,20 +103,20 @@ class WorkflowOutput(TaskInput):
     def tasks(self):
         return set([self.task])
 
-    def connect(self, connection):
+    def receive_from(self, connection):
         # if hasattr(connection, 'target_infos'):
         #     raise Exception('You can only connect TargetInfo objects to a WorkflowOuput')
 
         if isinstance(connection, list):
             for item in connection:
-                self.connect(item)
+                self.receive_from(item)
         else:
             if hasattr(connection, 'tasks'):
                 for task in connection.tasks:
                     self.sub_workflow_reqs.add(task)
             else:
                 self.sub_workflow_reqs.add(connection.task)
-            super(WorkflowOutput, self).connect(connection)
+            super(WorkflowOutput, self).receive_from(connection)
 
 
 class TargetInfo(object):
@@ -134,6 +138,9 @@ class TargetInfo(object):
         Forward open method, from luigi's target class
         '''
         return self.target.open(*args, **kwargs)
+
+    def send_to(self, connection):
+        _send(self, connection)
 
 
 # ==============================================================================
@@ -179,7 +186,14 @@ class DependencyHelpers(object):
         input_attrs = []
         for attrname, attrval in iteritems(self.__dict__):
             if 'in_' == attrname[0:3]:
-                input_attrs.append(attrval)
+                if isinstance(attrval, Mapping):
+                    for item in attrval.values():
+                        input_attrs.append(item)
+                elif isinstance(attrval, Sequence):
+                    for item in attrval:
+                        input_attrs.append(item)
+                else:
+                    input_attrs.append(attrval)
         return input_attrs
 
     def _upstream_tasks(self):
@@ -228,11 +242,12 @@ class DependencyHelpers(object):
             if self._is_property(attrname):
                 continue  # Properties can't be outputs
             if 'out_' == attrname[0:4]:
-                if isinstance(attrval, dict):
+                if isinstance(attrval, Mapping):
                     for key in attrval:
                         output_attrs.append(attrval[key])
-                elif isinstance(attrval, list):
-                    output_attrs += attrval
+                elif isinstance(attrval, Sequence):
+                    for item in attrval:
+                        output_attrs.append(item)
                 else:
                     output_attrs.append(attrval)
         return output_attrs
@@ -266,12 +281,6 @@ class DependencyHelpers(object):
         elif isinstance (val, TaskInput):
             for info in val:
                 target_infos.append(info)
-        elif isinstance(val, list):
-            for valitem in val:
-                target_infos = self._parse_outputitem(valitem, target_infos)
-        elif isinstance(val, dict):
-            for _, valitem in iteritems(val):
-                target_infos = self._parse_outputitem(valitem, target_infos)
         else:
             raise Exception('Input item is neither callable, WorkflowOutput, TargetInfo, nor list: %s' % val)
         return target_infos
