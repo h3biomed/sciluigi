@@ -15,6 +15,13 @@ import logging
 log = logging.getLogger('sciluigi-interface')
 
 
+def mirror_outputs(outer_workflow, inner_workflow):
+    for attrname, attrval in iteritems(inner_workflow.__dict__):
+        if 'out_' == attrname[0:4]:
+            setattr(outer_workflow, attrname, attrval)
+            getattr(outer_workflow, attrname).receive_from(getattr(inner_workflow, attrname))
+
+
 # ==============================================================================
 
 class TaskInput(object):
