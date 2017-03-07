@@ -31,10 +31,7 @@ class TaskInput(object):
 
     @property
     def tasks(self):
-        if len(self._sub_workflow_tasks):
-            return self._sub_workflow_tasks
-        else:
-            return set([i.task for i in self.target_infos])
+        return set([i.task for i in self.target_infos])
 
     @property
     def task(self):
@@ -55,7 +52,6 @@ class TaskInput(object):
     def __init__(self):
         self.target_infos = set([])
         self.downstream_inputs = set([])
-        self._sub_workflow_tasks = set([])
 
     def __iter__(self):
         return self.target_infos.__iter__()
@@ -74,8 +70,6 @@ class TaskInput(object):
             for info in connection.target_infos:
                 self.receive_from(info)
             connection.downstream_inputs.add(self)
-            if isinstance(connection, WorkflowOutput) and not isinstance(self, WorkflowOutput):
-                self._sub_workflow_tasks.add(connection.task)  # Make note of sub_workflow_task if applicable
             for downstream_input in self.downstream_inputs:
                 downstream_input.receive_from(connection)
         else:
@@ -92,31 +86,12 @@ class WorkflowOutput(TaskInput):
 
     def __init__(self, sub_workflow_task):
         super(WorkflowOutput, self).__init__()
-        self._sub_workflow_tasks = set([sub_workflow_task])
-        self.sub_workflow_reqs = set([])
 
-    @property
-    def task(self):
-        return [task for task in self._sub_workflow_tasks][0]
 
-    @property
-    def tasks(self):
-        return set([self.task])
-
-    def receive_from(self, connection):
-        # if hasattr(connection, 'target_infos'):
-        #     raise Exception('You can only connect TargetInfo objects to a WorkflowOuput')
-
-        if isinstance(connection, list):
-            for item in connection:
-                self.receive_from(item)
-        else:
-            if hasattr(connection, 'tasks'):
-                for task in connection.tasks:
-                    self.sub_workflow_reqs.add(task)
-            else:
-                self.sub_workflow_reqs.add(connection.task)
-            super(WorkflowOutput, self).receive_from(connection)
+def _send(from_obj, to_obj):
+    if not hasattr(to_obj, 'receive_from'):
+        raise ValueError('Given connection cannot receive objects')
+    to_obj.receive_from(from_obj)
 
 
 class TargetInfo(object):

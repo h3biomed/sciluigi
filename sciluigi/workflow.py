@@ -22,10 +22,8 @@ class WorkflowTask(sciluigi.task.Task):
         raise NotImplementedError
 
     def requires(self):
-        log.info('Getting sub-workflow requirements for ' + self.__class__.__name__)
-        #return self.endpoints
-
-        return [output.sub_workflow_reqs for output in self.get_output_attrs()]
+        def requires(self):
+            return [info.task for info in self.output_infos()]
 
     def mirror_outputs(self, inner_workflow):
         for attrname, attrval in iteritems(inner_workflow.__dict__):
