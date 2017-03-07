@@ -1,5 +1,6 @@
 import logging
 import luigi
+from luigi.six import iteritems
 import sciluigi
 
 log = logging.getLogger('sciluigi-interface')
@@ -24,3 +25,9 @@ class WorkflowTask(sciluigi.task.Task):
         #return self.endpoints
 
         return [output.sub_workflow_reqs for output in self.get_output_attrs()]
+
+    def mirror_outputs(self, inner_workflow):
+        for attrname, attrval in iteritems(inner_workflow.__dict__):
+            if 'out_' == attrname[0:4]:
+                setattr(self, attrname, attrval)
+                getattr(self, attrname).receive_from(getattr(inner_workflow, attrname))
