@@ -69,9 +69,6 @@ class Task(sciluigi.dependencies.DependencyHelpers, luigi.Task):
         return self
 
     def __reduce__(self):
-        log.info('Printing args:')
-        log.info(self.sciluigi_reduce_args)
-        log.info(self.__class__.__name__)
         return self.sciluigi_reduce_function, self.sciluigi_reduce_args, self.sciluigi_state
 
     def configure_instance(self):
