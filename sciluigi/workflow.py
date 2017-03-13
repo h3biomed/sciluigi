@@ -27,7 +27,7 @@ class WorkflowTask(sciluigi.task.Task):
     def mirror_outputs(self, inner_workflow):
         for attrname, attrval in iteritems(inner_workflow.__dict__):
             if 'out_' == attrname[0:4]:
-                setattr(self, attrname, attrval)
+                setattr(self, inner_workflow.instance_name + '-' + attrname, attrval)
 
                 # if isinstance(attrval, Mapping):
                 #     for key in attrval:
