@@ -1,4 +1,3 @@
-from collections import Mapping, Sequence
 import logging
 import luigi
 from luigi.six import iteritems
