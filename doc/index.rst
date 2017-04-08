@@ -14,7 +14,6 @@ User Guides
    overview.rst
    tasks.rst
    workflows.rst
-   subworkflows.rst
 
 API Reference
 -------------

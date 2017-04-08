@@ -27,7 +27,7 @@ a certain type of input, such as a FASTQ file, rather than hard-coding them to d
 separate workflow definition, users can stitch tasks together.  This pattern is much more flexible and works better
 certain H3 pipelines, such as Xenotools.
 
-In addition, this library allows for the creation of "sub-workflows" within a larger workflow.  This pattern comes in
+In addition, this library allows for the creation of child workflows within a larger workflow.  This pattern comes in
 handy if a certain set of tasks are always run in the same order and used within several different workflows.
 
 Running a Workflow
@@ -35,5 +35,5 @@ Running a Workflow
 
 SciLuigi can be run from the command line just like Luigi
 (see `Luigi guide <http://luigi.readthedocs.io/en/stable/command_line.html>`_).  Just replace the ``luigi`` command
-with ``sciluigi``.  In addition, note that ``MyTask`` should be a workflow when running SciLuigi, not a task.  Se the
+with ``sciluigi``.  In addition, note that ``MyTask`` should be a workflow when running SciLuigi, not a task.  See the
 remainder of this documentation for more info on the differences between tasks and workflows.
