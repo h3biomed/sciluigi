@@ -1,7 +1,8 @@
 import logging
+
 import luigi
-from luigi.six import iteritems
 import sciluigi
+from luigi.six import iteritems
 
 log = logging.getLogger('sciluigi-interface')
 
@@ -24,17 +25,16 @@ class WorkflowTask(sciluigi.task.Task):
         return [info.task for info in self.output_infos()]
 
     def mirror_outputs(self, inner_workflow, element_id=None):
-        # if isinstance(attrval, Mapping):
-        #     for key in attrval:
-        #         getattr(self, attrname)[key].receive_from(getattr(inner_workflow, attrname)[key])
-        # elif isinstance(attrval, Sequence):
-        #     for item in attrval:
-        #         get
-        # getattr(self, attrname).receive_from(getattr(inner_workflow, attrname))
-
-        for attrname, attrval in iteritems(inner_workflow.__dict__):
-            if 'out_' == attrname[0:4]:
+        for attr_name, attr_val in iteritems(inner_workflow.__dict__):
+            if attr_name.startswith('out_'):
                 if element_id is not None:
-                    setattr(self, '%s-%s-%s' % (attrname, element_id, inner_workflow.instance_name), attrval)
+                    setattr(self, '%s-%s-%s' % (attr_name, element_id, inner_workflow.instance_name), attr_val)
                 else:
-                    setattr(self, '%s-%s' % (attrname, inner_workflow.instance_name), attrval)
+                    setattr(self, '%s-%s' % (attr_name, inner_workflow.instance_name), attr_val)
+
+    def get_all_outputs(self):
+        """
+        Retrieve a list of all task outputs (i.e. those that start with 'out_')
+        :return: a list of all task outputs
+        """
+        return [attr_val for attr_name, attr_val in iteritems(self.__dict__) if attr_name.startswith('out_')]
