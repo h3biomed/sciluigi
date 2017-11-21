@@ -1,6 +1,3 @@
-import os
-import sys
-
 try:
     from setuptools import setup
 except:
@@ -18,7 +15,7 @@ with open('README.rst') as fobj:
 
 setup(
     name='h3sciluigi',
-    version='5.1.0',
+    version='5.2.0',
     description='Helper library for writing dynamic, flexible workflows in luigi',
     long_description=long_description,
     author='Samuel Lampa and Michael Soltow',
@@ -32,7 +29,7 @@ setup(
     install_requires=[
         'h3luigi',
         'sphinx_rtd_theme'
-        ],
+    ],
     entry_points={
         'console_scripts': [
             'sciluigi = sciluigi.cmdline:sciluigi_run'
